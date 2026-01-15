@@ -43,37 +43,19 @@
             z-index: 5;
             transition: transform 0.2s;
         }
-        .badge-container:hover { transform: translateY(-50%) scale(1.1); }
-
-        .trophy-row {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap-reverse;
-            gap: -2px;
-            margin-bottom: -4px;
-            max-width: 100px;
-        }
-
-        .oscar-trophy {
-            width: 16px;
-            height: 28px;
-            fill: url(#gold-gradient);
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
-            transition: transform 0.2s;
-        }
-        .oscar-trophy:hover { transform: translateY(-3px) scale(1.2); }
+        .badge-container:hover { transform: translateY(-50%) scale(1.05); }
 
         .badge-text {
             white-space: nowrap;
             color: #d97706; 
             font-weight: 800;
-            font-size: 0.85em;
-            text-shadow: 0 1px 1px rgba(255,255,255,0.9);
+            font-size: 0.9em;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.9);
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            padding: 3px 8px;
-            border-radius: 8px;
-            border: 1px solid #f59e0b;
-            box-shadow: 0 2px 5px rgba(245, 158, 11, 0.15);
+            padding: 5px 12px;
+            border-radius: 10px;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255,255,255,0.5);
         }
 
         /* 1등 왕관 애니메이션 */
@@ -116,15 +98,58 @@
         .ai-summary-btn:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
 
         .ai-result-box {
-            margin-top: 15px; padding: 15px; background: #f0fdf4;
+            margin-top: 15px; padding: 20px; background: #f0fdf4;
             border: 1px solid #86efac; border-radius: 12px;
-            font-size: 0.9em; color: #166534; line-height: 1.6;
+            font-size: 0.95em; color: #166534; line-height: 1.9;
             display: none; /* 기본적으로 숨김 */
-            text-align: left; white-space: pre-wrap;
+            text-align: left;
             width: 100%;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
         .ai-result-box.active { display: block; animation: modalSlideIn 0.3s ease; }
+        
+        /* AI 결과 섹션 스타일 */
+        .ai-section {
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #86efac;
+        }
+        .ai-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .ai-section-title {
+            font-weight: 800;
+            font-size: 1.05em;
+            color: #059669;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-section-content {
+            color: #166534;
+            line-height: 1.8;
+            padding-left: 24px;
+        }
+        
+        /* AI 로딩 애니메이션 */
+        .ai-loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #86efac;
+            border-top-color: #059669;
+            border-radius: 50%;
+            animation: aiSpin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes aiSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         
         /* ------------------------------------ */
 
@@ -294,7 +319,7 @@
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyClw_YuMk7hwlV-c2kAagxbSDFjJ8J2qHk",
+            apiKey: "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs",
             authDomain: "grape-board-7065e.firebaseapp.com",
             projectId: "grape-board-7065e",
             storageBucket: "grape-board-7065e.firebasestorage.app",
@@ -656,24 +681,10 @@
                 return { id: m.id, score: score };
             });
             
-            const oscarPath = "M8 2c1.1 0 2 .9 2 2 0 1.1-.9 2-2 2s-2-.9-2-2c0-1.1.9-2 2-2zm1 5h-2c-.5 0-1 .4-1 1v12c0 .5.4 1 1 1h2c.5 0 1-.4 1-1V8c0-.5-.4-1-1-1zm-4 15h10v2H5v-2z";
-
             members.forEach(member => {
                 const scoreObj = memberScores.find(s => s.id === member.id);
                 const isKing = maxScore > 0 && scoreObj.score === maxScore;
                 const isGoldTier = (member.completionCount || 0) >= 1;
-
-                let trophiesHtml = '';
-                if(member.completionCount > 0) {
-                    trophiesHtml = '<div class="trophy-row">';
-                    for(let i=0; i<member.completionCount; i++) {
-                        trophiesHtml += `
-                        <svg class="oscar-trophy" viewBox="0 0 16 28">
-                            <path d="${oscarPath}"></path>
-                        </svg>`;
-                    }
-                    trophiesHtml += '</div>';
-                }
 
                 const card = document.createElement('div');
                 card.className = 'member-card';
@@ -688,7 +699,6 @@
                                 
                                 ${member.completionCount > 0 
                                     ? `<div class="badge-container" onclick="showHistory('${member.id}')" title="누르면 과거 칭찬 내역을 볼 수 있습니다">
-                                         ${trophiesHtml}
                                          <div class="badge-text">${member.completionCount}회 완성</div>
                                        </div>` 
                                     : ''}
@@ -798,10 +808,64 @@
             }
         });
 
-        // ▼▼▼ Gemini AI 요약 기능 (새로운 키 + v1beta + 1.5-flash 적용 완료) ▼▼▼
+        // AI 결과 파싱 함수 (가독성 개선)
+        function parseAIResult(text) {
+            // 1, 2, 3으로 시작하는 섹션을 찾아서 구조화
+            const lines = text.split('\n');
+            let html = '';
+            let currentSection = '';
+            let sectionContent = '';
+            
+            lines.forEach((line, index) => {
+                const trimmedLine = line.trim();
+                
+                // 1. 또는 2. 또는 3. 으로 시작하는 경우 (새로운 섹션)
+                const sectionMatch = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
+                
+                if (sectionMatch) {
+                    // 이전 섹션 저장
+                    if (currentSection) {
+                        html += `<div class="ai-section">
+                                    <div class="ai-section-title">${currentSection}</div>
+                                    <div class="ai-section-content">${sectionContent}</div>
+                                 </div>`;
+                    }
+                    
+                    // 새로운 섹션 시작
+                    const sectionNum = sectionMatch[1];
+                    const sectionTitle = sectionMatch[2];
+                    currentSection = `${sectionNum}. ${sectionTitle}`;
+                    sectionContent = '';
+                } else if (trimmedLine) {
+                    // 섹션 내용 추가
+                    if (sectionContent) sectionContent += '<br>';
+                    sectionContent += trimmedLine;
+                } else if (!currentSection && trimmedLine) {
+                    // 섹션 구분 없이 시작하는 경우
+                    html += trimmedLine + '<br>';
+                }
+            });
+            
+            // 마지막 섹션 저장
+            if (currentSection) {
+                html += `<div class="ai-section">
+                            <div class="ai-section-title">${currentSection}</div>
+                            <div class="ai-section-content">${sectionContent}</div>
+                         </div>`;
+            }
+            
+            // 섹션이 없는 경우 기본 포맷팅
+            if (!html) {
+                html = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+            }
+            
+            return html;
+        }
+
+        // ▼▼▼ Gemini AI 요약 기능 ▼▼▼
         window.generateAISummary = async function(memberId) {
             // 전달해주신 새로운 키를 적용했습니다.
-            const apiKey = "AIzaSyB91ANCCcPUihGIdOhhdnMFbPwEyMB7cuE"; 
+            const apiKey = "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs"; 
             
             const member = members.find(m => m.id === memberId);
             if (!member) return;
@@ -826,25 +890,34 @@
 
             const resultBox = document.getElementById(`ai-result-${memberId}`);
             resultBox.classList.add('active');
-            resultBox.innerHTML = "✨ Gemini AI가 무료로 분석 중입니다...<br>(잠시만 기다려주세요)";
+            resultBox.innerHTML = '<div style="display: flex; align-items: center; justify-content: center;"><span class="ai-loading"></span><span>✨ AI 분석을 실행 중입니다...</span></div>';
 
             try {
                 const promptText = `
-                    다음은 '${member.name}' 님이 동료들에게 받은 칭찬 목록이야:
-                    ${JSON.stringify(allPraises)}
+다음은 '${member.name}' 님이 동료들에게 받은 칭찬 목록입니다:
+${JSON.stringify(allPraises)}
 
-                    이 데이터를 바탕으로 이 사람이 어떤 강점을 가진 동료인지 분석해줘.
-                    다음 형식으로 요약해서 답변해줘 (한국어로):
-                    
-                    1. 🏆 핵심 키워드 3개 (예: #책임감 #센스 #소통왕)
-                    2. 📝 한 줄 요약 (이 사람의 업무 스타일이나 성격을 한 문장으로)
-                    3. ✨ 동료들의 평가 요약 (어떤 점을 주로 칭찬받는지 2~3문장으로 부드럽게)
-                    
-                    이모지를 적절히 섞어서 따뜻한 어투로 말해줘. HTML 태그는 쓰지 말고 텍스트로만 줘.
+이 데이터를 바탕으로 이 사람의 강점을 분석해주세요.
+반드시 아래 형식을 정확히 지켜서 답변해주세요:
+
+1. 🏆 핵심 키워드 3개
+#키워드1 #키워드2 #키워드3 형식으로 3개만 나열
+
+2. 📝 한 줄 요약
+이 사람의 업무 스타일이나 성격을 한 문장으로 요약
+
+3. ✨ 동료들의 평가 요약
+어떤 점을 주로 칭찬받는지 2~3문장으로 부드럽게 설명
+
+중요: 
+- 반드시 "1.", "2.", "3." 번호로 시작하는 3개 섹션으로 구분
+- 각 섹션은 빈 줄로 구분
+- HTML 태그 사용 금지
+- 따뜻한 어투 사용
                 `;
 
-                // 🚨 gemini-1.5-flash 모델 사용 (v1beta)
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                // 🚨 gemini-2.5-flash 모델 사용 (v1 - 최신 API)
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
                     method: "POST",
@@ -863,7 +936,10 @@
                 }
 
                 const aiText = data.candidates[0].content.parts[0].text;
-                resultBox.innerHTML = aiText.replace(/\n/g, '<br>');
+                
+                // AI 결과를 섹션별로 파싱하여 가독성 개선
+                const formattedHTML = parseAIResult(aiText);
+                resultBox.innerHTML = formattedHTML;
 
             } catch (error) {
                 console.error(error);
