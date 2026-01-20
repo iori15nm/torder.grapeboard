@@ -1,899 +1,899 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍇 팀 칭찬 포도 보드 (+AI 요약)</title>
-    <style>
-        /* --- 기본 스타일 --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f0ff 0%, #e8deff 100%); min-height: 100vh; padding: 20px; }
-        
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #6b46c1; font-size: 2.5em; margin-bottom: 10px; }
-        .header p { color: #7c3aed; font-size: 1.1em; }
-        
-        .controls { text-align: center; margin-bottom: 30px; }
-        .btn-add-member { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; border: none; padding: 12px 30px; font-size: 1.1em; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); font-weight: 600; }
-        .btn-add-member:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); }
-        
-        .members-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px 20px; max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
-        
-        .member-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease, z-index 0s; overflow: visible; z-index: 1; margin-top: 20px; }
-        .member-card:hover { transform: translateY(-5px); }
-        
-        .btn-remove { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2em; transition: all 0.3s ease; z-index: 10; }
-        .btn-remove:hover { background: #dc2626; transform: rotate(90deg); }
-        
-        .member-header { text-align: center; margin-bottom: 15px; }
-        .profile-section { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        
-        .profile-image-container { position: relative; width: 70px; height: 70px; margin: 0 auto; }
-        
-        /* --- 뱃지 및 트로피 스타일 --- */
-        .badge-container {
-            position: absolute;
-            right: 135%;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            z-index: 5;
-            transition: transform 0.2s;
-        }
-        .badge-container:hover { transform: translateY(-50%) scale(1.05); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍇 팀 칭찬 포도 보드 (+AI 요약)</title>
+    <style>
+        /* --- 기본 스타일 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f0ff 0%, #e8deff 100%); min-height: 100vh; padding: 20px; }
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #6b46c1; font-size: 2.5em; margin-bottom: 10px; }
+        .header p { color: #7c3aed; font-size: 1.1em; }
+        
+        .controls { text-align: center; margin-bottom: 30px; }
+        .btn-add-member { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; border: none; padding: 12px 30px; font-size: 1.1em; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); font-weight: 600; }
+        .btn-add-member:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); }
+        
+        .members-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px 20px; max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
+        
+        .member-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease, z-index 0s; overflow: visible; z-index: 1; margin-top: 20px; }
+        .member-card:hover { transform: translateY(-5px); }
+        
+        .btn-remove { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2em; transition: all 0.3s ease; z-index: 10; }
+        .btn-remove:hover { background: #dc2626; transform: rotate(90deg); }
+        
+        .member-header { text-align: center; margin-bottom: 15px; }
+        .profile-section { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        
+        .profile-image-container { position: relative; width: 70px; height: 70px; margin: 0 auto; }
+        
+        /* --- 뱃지 및 트로피 스타일 --- */
+        .badge-container {
+            position: absolute;
+            right: 135%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s;
+        }
+        .badge-container:hover { transform: translateY(-50%) scale(1.05); }
 
-        .badge-text {
-            white-space: nowrap;
-            color: #d97706; 
-            font-weight: 800;
-            font-size: 0.9em;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.9);
-            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            padding: 5px 12px;
-            border-radius: 10px;
-            border: 2px solid #f59e0b;
-            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255,255,255,0.5);
-        }
+        .badge-text {
+            white-space: nowrap;
+            color: #d97706; 
+            font-weight: 800;
+            font-size: 0.9em;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.9);
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            padding: 5px 12px;
+            border-radius: 10px;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255,255,255,0.5);
+        }
 
-        /* 1등 왕관 애니메이션 */
-        .crown-icon {
-            position: absolute;
-            top: -35px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2.5em;
-            z-index: 20;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-            animation: floatCrown 1.5s ease-in-out infinite alternate;
-        }
-        
-        @keyframes floatCrown {
-            from { top: -35px; transform: translateX(-50%) rotate(-5deg); }
-            to { top: -45px; transform: translateX(-50%) rotate(5deg); }
-        }
+        /* 1등 왕관 애니메이션 */
+        .crown-icon {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5em;
+            z-index: 20;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            animation: floatCrown 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes floatCrown {
+            from { top: -35px; transform: translateX(-50%) rotate(-5deg); }
+            to { top: -45px; transform: translateX(-50%) rotate(5deg); }
+        }
 
-        .profile-image { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #7c3aed; cursor: pointer; transition: all 0.3s ease; background: white; }
-        .profile-image:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
-        
-        .profile-placeholder { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #e8deff 0%, #d8c7ff 100%); display: flex; align-items: center; justify-content: center; font-size: 1.8em; cursor: pointer; border: 3px solid #7c3aed; transition: all 0.3s ease; }
-        .profile-placeholder:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
-        
-        .profile-upload { display: none; }
-        
-        .member-name-input { font-size: 1.1em; font-weight: bold; color: #6b46c1; border: 2px solid #e8deff; border-radius: 8px; padding: 6px 12px; text-align: center; outline: none; transition: all 0.3s ease; width: 100%; max-width: 200px; margin-top: 5px; }
-        .member-name-input:focus { border-color: #7c3aed; box-shadow: 0 0 10px rgba(124, 58, 237, 0.2); }
-        
-        /* --- AI 요약 관련 스타일 --- */
-        .ai-summary-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white; border: none; padding: 6px 16px; border-radius: 20px;
-            font-size: 0.85em; cursor: pointer; margin-top: 8px;
-            display: flex; align-items: center; gap: 6px; margin-left: auto; margin-right: auto;
-            font-weight: bold; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
-            transition: all 0.2s ease;
-        }
-        .ai-summary-btn:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
+        .profile-image { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #7c3aed; cursor: pointer; transition: all 0.3s ease; background: white; }
+        .profile-image:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
+        
+        .profile-placeholder { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #e8deff 0%, #d8c7ff 100%); display: flex; align-items: center; justify-content: center; font-size: 1.8em; cursor: pointer; border: 3px solid #7c3aed; transition: all 0.3s ease; }
+        .profile-placeholder:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
+        
+        .profile-upload { display: none; }
+        
+        .member-name-input { font-size: 1.1em; font-weight: bold; color: #6b46c1; border: 2px solid #e8deff; border-radius: 8px; padding: 6px 12px; text-align: center; outline: none; transition: all 0.3s ease; width: 100%; max-width: 200px; margin-top: 5px; }
+        .member-name-input:focus { border-color: #7c3aed; box-shadow: 0 0 10px rgba(124, 58, 237, 0.2); }
+        
+        /* --- AI 요약 관련 스타일 --- */
+        .ai-summary-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white; border: none; padding: 6px 16px; border-radius: 20px;
+            font-size: 0.85em; cursor: pointer; margin-top: 8px;
+            display: flex; align-items: center; gap: 6px; margin-left: auto; margin-right: auto;
+            font-weight: bold; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s ease;
+        }
+        .ai-summary-btn:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
 
-        .ai-result-box {
-            margin-top: 15px; padding: 20px; background: #f0fdf4;
-            border: 1px solid #86efac; border-radius: 12px;
-            font-size: 0.95em; color: #166534; line-height: 1.9;
-            display: none; /* 기본적으로 숨김 */
-            text-align: left;
-            width: 100%;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .ai-result-box.active { display: block; animation: modalSlideIn 0.3s ease; }
-        
-        /* AI 결과 섹션 스타일 */
-        .ai-section {
-            margin-bottom: 18px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed #86efac;
-        }
-        .ai-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        .ai-section-title {
-            font-weight: 800;
-            font-size: 1.05em;
-            color: #059669;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .ai-section-content {
-            color: #166534;
-            line-height: 1.8;
-            padding-left: 24px;
-        }
-        
-        /* AI 로딩 애니메이션 */
-        .ai-loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 3px solid #86efac;
-            border-top-color: #059669;
-            border-radius: 50%;
-            animation: aiSpin 0.8s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        @keyframes aiSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* ------------------------------------ */
+        .ai-result-box {
+            margin-top: 15px; padding: 20px; background: #f0fdf4;
+            border: 1px solid #86efac; border-radius: 12px;
+            font-size: 0.95em; color: #166534; line-height: 1.9;
+            display: none; /* 기본적으로 숨김 */
+            text-align: left;
+            width: 100%;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .ai-result-box.active { display: block; animation: modalSlideIn 0.3s ease; }
+        
+        /* AI 결과 섹션 스타일 */
+        .ai-section {
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #86efac;
+        }
+        .ai-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .ai-section-title {
+            font-weight: 800;
+            font-size: 1.05em;
+            color: #059669;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-section-content {
+            color: #166534;
+            line-height: 1.8;
+            padding-left: 24px;
+        }
+        
+        /* AI 로딩 애니메이션 */
+        .ai-loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #86efac;
+            border-top-color: #059669;
+            border-radius: 50%;
+            animation: aiSpin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes aiSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ------------------------------------ */
 
-        .grape-board { margin-top: 15px; display: flex; flex-direction: column; align-items: center; position: relative; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 0 0 3px white, 0 0 15px rgba(0, 0, 0, 0.1); overflow: visible; }
-        
-        .grape-header { display: flex; align-items: flex-start; justify-content: center; position: relative; margin-bottom: 0; width: 100%; height: 50px; z-index: 1; }
-        .grape-stem { width: 6px; height: 30px; background: linear-gradient(180deg, #3d2817 0%, #5c3317 100%); border-radius: 3px; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1; }
-        
-        .grape-leaves { display: flex; gap: -5px; position: absolute; top: 0; left: 50%; transform: translateX(-120%); z-index: 2; }
-        
-        .leaf { width: 45px; height: 40px; background: linear-gradient(135deg, #2d8659 0%, #1f6b47 100%); border-radius: 50% 0%; position: relative; border: 2px solid #1a5437; transition: all 0.5s ease; }
-        .leaf.gold { background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%); border-color: #b45309; box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
-        
-        .leaf:first-child { transform: rotate(-10deg); z-index: 1; }
-        .leaf:last-child { transform: rotate(-35deg) translateX(-15px); z-index: 2; }
-        
-        .grape-title { position: absolute; top: 8px; right: 50%; transform: translateX(140%); font-size: 1em; font-weight: bold; color: #5b21b6; z-index: 3; white-space: nowrap; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
-        
-        .grape-cluster { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 3px; position: relative; z-index: 1; }
-        .grape-row { display: flex; gap: 4px; justify-content: center; }
-        
-        .grape { width: 35px; height: 35px; border: 3px solid #7c3aed; border-radius: 50%; background: white; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 0.85em; color: transparent; font-weight: 500; position: relative; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); z-index: 1; }
-        .grape:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
-        .grape.filled { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border-color: #7c3aed; }
-        
-        .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: auto; left: 50%; top: 120%; transform: translateX(-50%); background: white; color: #1f2937; padding: 15px 20px; border-radius: 12px; font-size: 1em; font-weight: 500; z-index: 999999; max-width: 400px; min-width: 150px; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; line-height: 1.5; text-align: left; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px #7c3aed; pointer-events: none; }
-        .grape.filled:hover::before { content: ''; position: absolute; bottom: auto; left: 50%; top: calc(120% - 8px); transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: white; z-index: 999999; filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1)); pointer-events: none; }
-        .grape.filled:hover { z-index: 999998; }
-        
-        /* 모달 스타일 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: modalSlideIn 0.3s ease; }
-        @keyframes modalSlideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header { font-size: 1.5em; color: #6b46c1; margin-bottom: 20px; text-align: center; }
-        .modal-input { width: 100%; padding: 15px; border: 2px solid #e8deff; border-radius: 10px; font-size: 1em; outline: none; transition: all 0.3s ease; margin-bottom: 20px; }
-        .modal-input:focus { border-color: #7c3aed; box-shadow: 0 0 10px rgba(124, 58, 237, 0.2); }
-        .modal-buttons { display: flex; gap: 10px; }
-        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; transition: all 0.3s ease; }
-        .modal-btn-save { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; }
-        .modal-btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
-        .modal-btn-cancel { background: #e5e7eb; color: #4b5563; }
-        .modal-btn-cancel:hover { background: #d1d5db; }
-        .modal-btn-delete { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
-        .modal-btn-delete:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
-        .modal-text { color: #4b5563; font-size: 1.1em; margin-bottom: 20px; text-align: center; line-height: 1.6; }
-        
-        /* 히스토리 모달 스타일 */
-        .history-list { max-height: 400px; overflow-y: auto; text-align: left; padding: 0 10px; }
-        .history-round { background: #f9fafb; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid #e5e7eb; }
-        .history-title { font-weight: bold; color: #d97706; margin-bottom: 10px; font-size: 1.1em; border-bottom: 2px solid #fef3c7; padding-bottom: 5px; }
-        .history-item { padding: 8px 0; border-bottom: 1px dashed #e5e7eb; font-size: 0.95em; color: #4b5563; }
-        .history-item:last-child { border-bottom: none; }
-        .history-date { font-size: 0.8em; color: #9ca3af; margin-top: 2px; }
+        .grape-board { margin-top: 15px; display: flex; flex-direction: column; align-items: center; position: relative; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 0 0 3px white, 0 0 15px rgba(0, 0, 0, 0.1); overflow: visible; }
+        
+        .grape-header { display: flex; align-items: flex-start; justify-content: center; position: relative; margin-bottom: 0; width: 100%; height: 50px; z-index: 1; }
+        .grape-stem { width: 6px; height: 30px; background: linear-gradient(180deg, #3d2817 0%, #5c3317 100%); border-radius: 3px; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1; }
+        
+        .grape-leaves { display: flex; gap: -5px; position: absolute; top: 0; left: 50%; transform: translateX(-120%); z-index: 2; }
+        
+        .leaf { width: 45px; height: 40px; background: linear-gradient(135deg, #2d8659 0%, #1f6b47 100%); border-radius: 50% 0%; position: relative; border: 2px solid #1a5437; transition: all 0.5s ease; }
+        .leaf.gold { background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%); border-color: #b45309; box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+        
+        .leaf:first-child { transform: rotate(-10deg); z-index: 1; }
+        .leaf:last-child { transform: rotate(-35deg) translateX(-15px); z-index: 2; }
+        
+        .grape-title { position: absolute; top: 8px; right: 50%; transform: translateX(140%); font-size: 1em; font-weight: bold; color: #5b21b6; z-index: 3; white-space: nowrap; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+        
+        .grape-cluster { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 3px; position: relative; z-index: 1; }
+        .grape-row { display: flex; gap: 4px; justify-content: center; }
+        
+        .grape { width: 35px; height: 35px; border: 3px solid #7c3aed; border-radius: 50%; background: white; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 0.85em; color: transparent; font-weight: 500; position: relative; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); z-index: 1; }
+        .grape:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
+        .grape.filled { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border-color: #7c3aed; }
+        
+        .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: auto; left: 50%; top: 120%; transform: translateX(-50%); background: white; color: #1f2937; padding: 15px 20px; border-radius: 12px; font-size: 1em; font-weight: 500; z-index: 999999; max-width: 400px; min-width: 150px; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; line-height: 1.5; text-align: left; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px #7c3aed; pointer-events: none; }
+        .grape.filled:hover::before { content: ''; position: absolute; bottom: auto; left: 50%; top: calc(120% - 8px); transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: white; z-index: 999999; filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1)); pointer-events: none; }
+        .grape.filled:hover { z-index: 999998; }
+        
+        /* 모달 스타일 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: modalSlideIn 0.3s ease; }
+        @keyframes modalSlideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { font-size: 1.5em; color: #6b46c1; margin-bottom: 20px; text-align: center; }
+        .modal-input { width: 100%; padding: 15px; border: 2px solid #e8deff; border-radius: 10px; font-size: 1em; outline: none; transition: all 0.3s ease; margin-bottom: 20px; }
+        .modal-input:focus { border-color: #7c3aed; box-shadow: 0 0 10px rgba(124, 58, 237, 0.2); }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; transition: all 0.3s ease; }
+        .modal-btn-save { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; }
+        .modal-btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
+        .modal-btn-cancel { background: #e5e7eb; color: #4b5563; }
+        .modal-btn-cancel:hover { background: #d1d5db; }
+        .modal-btn-delete { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+        .modal-btn-delete:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
+        .modal-text { color: #4b5563; font-size: 1.1em; margin-bottom: 20px; text-align: center; line-height: 1.6; }
+        
+        /* 히스토리 모달 스타일 */
+        .history-list { max-height: 400px; overflow-y: auto; text-align: left; padding: 0 10px; }
+        .history-round { background: #f9fafb; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid #e5e7eb; }
+        .history-title { font-weight: bold; color: #d97706; margin-bottom: 10px; font-size: 1.1em; border-bottom: 2px solid #fef3c7; padding-bottom: 5px; }
+        .history-item { padding: 8px 0; border-bottom: 1px dashed #e5e7eb; font-size: 0.95em; color: #4b5563; }
+        .history-item:last-child { border-bottom: none; }
+        .history-date { font-size: 0.8em; color: #9ca3af; margin-top: 2px; }
 
-        @keyframes sparkle { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(124, 58, 237, 0); } 50% { transform: scale(1.2); box-shadow: 0 0 30px rgba(124, 58, 237, 0.8); } }
-        .grape.sparkle { animation: sparkle 0.6s ease; }
-        
-        .celebration-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 3000; align-items: center; justify-content: center; }
-        .celebration-modal.active { display: flex; }
-        .celebration-content { background: white; border-radius: 30px; padding: 50px; max-width: 600px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: celebrationBounce 0.6s ease; }
-        @keyframes celebrationBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .celebration-emoji { font-size: 5em; margin-bottom: 20px; animation: rotate 1s ease infinite; }
-        @keyframes rotate { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
-        .celebration-title { font-size: 2em; color: #6b46c1; margin-bottom: 15px; font-weight: bold; }
-        .celebration-message { font-size: 1.2em; color: #4b5563; margin-bottom: 30px; }
-        .celebration-btn { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; border: none; padding: 15px 40px; font-size: 1.2em; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(124, 58, 237, 0.3); }
-        .celebration-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4); }
-        
-        /* 컨페티 (축포) */
-        .confetti { position: fixed; width: 10px; height: 10px; background: #fbbf24; position: absolute; animation: confettiFall 3s linear; }
-        @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2500; }
-        
-        .grape-confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; overflow: hidden; border-radius: 15px; }
-        .grape-confetti { position: absolute; pointer-events: none; }
-        @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes slideInDown { from { transform: translateX(-50%) translateY(-100px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
-        
-        @media (max-width: 768px) { .header h1 { font-size: 2em; } .members-container { grid-template-columns: 1fr; } .grape { width: 35px; height: 35px; } }
-        
-        .backup-controls { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
-        .btn-mini { background: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; font-size: 0.8em; cursor: pointer; backdrop-filter: blur(5px); }
-        .btn-mini:hover { background: white; }
-    </style>
-    
-    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
-        <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#fcd34d;stop-opacity:1" />
-            <stop offset="50%" style="stop-color:#fbbf24;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
-        </linearGradient>
-    </svg>
+        @keyframes sparkle { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(124, 58, 237, 0); } 50% { transform: scale(1.2); box-shadow: 0 0 30px rgba(124, 58, 237, 0.8); } }
+        .grape.sparkle { animation: sparkle 0.6s ease; }
+        
+        .celebration-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 3000; align-items: center; justify-content: center; }
+        .celebration-modal.active { display: flex; }
+        .celebration-content { background: white; border-radius: 30px; padding: 50px; max-width: 600px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: celebrationBounce 0.6s ease; }
+        @keyframes celebrationBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .celebration-emoji { font-size: 5em; margin-bottom: 20px; animation: rotate 1s ease infinite; }
+        @keyframes rotate { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+        .celebration-title { font-size: 2em; color: #6b46c1; margin-bottom: 15px; font-weight: bold; }
+        .celebration-message { font-size: 1.2em; color: #4b5563; margin-bottom: 30px; }
+        .celebration-btn { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; border: none; padding: 15px 40px; font-size: 1.2em; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(124, 58, 237, 0.3); }
+        .celebration-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4); }
+        
+        /* 컨페티 (축포) */
+        .confetti { position: fixed; width: 10px; height: 10px; background: #fbbf24; position: absolute; animation: confettiFall 3s linear; }
+        @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2500; }
+        
+        .grape-confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; overflow: hidden; border-radius: 15px; }
+        .grape-confetti { position: absolute; pointer-events: none; }
+        @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes slideInDown { from { transform: translateX(-50%) translateY(-100px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+        
+        @media (max-width: 768px) { .header h1 { font-size: 2em; } .members-container { grid-template-columns: 1fr; } .grape { width: 35px; height: 35px; } }
+        
+        .backup-controls { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
+        .btn-mini { background: rgba(255, 255, 255, 0.8); border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; font-size: 0.8em; cursor: pointer; backdrop-filter: blur(5px); }
+        .btn-mini:hover { background: white; }
+    </style>
+    
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#fcd34d;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#fbbf24;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+        </linearGradient>
+    </svg>
 </head>
 <body>
-    <div class="header">
-        <h1>🍇 비즈옵스 칭찬 포도</h1>
-        <p>팀원들의 좋은 일을 칭찬하고 포도를 채워보세요!</p>
-        <p style="font-size: 0.9em; color: #9333ea; margin-top: 5px;">
-            💡 팁: 빈 포도알을 클릭하여 칭찬을 추가하세요! (실시간 자동 저장) ⚡
-        </p>
-    </div>
+    <div class="header">
+        <h1>🍇 비즈옵스 칭찬 포도</h1>
+        <p>팀원들의 좋은 일을 칭찬하고 포도를 채워보세요!</p>
+        <p style="font-size: 0.9em; color: #9333ea; margin-top: 5px;">
+            💡 팁: 빈 포도알을 클릭하여 칭찬을 추가하세요! (실시간 자동 저장) ⚡
+        </p>
+    </div>
 
-    <div class="controls">
-        <button class="btn-add-member" onclick="handleAddMember()"><span style="color: white;">➕</span> 팀원 추가</button>
-    </div>
+    <div class="controls">
+        <button class="btn-add-member" onclick="handleAddMember()"><span style="color: white;">➕</span> 팀원 추가</button>
+    </div>
 
-    <div class="members-container" id="membersContainer">
-        <div style="text-align:center; width:100%; color:#6b46c1;">데이터를 불러오는 중...</div>
-    </div>
+    <div class="members-container" id="membersContainer">
+        <div style="text-align:center; width:100%; color:#6b46c1;">데이터를 불러오는 중...</div>
+    </div>
 
-    <div class="modal" id="praiseModal">
-        <div class="modal-content">
-            <div class="modal-header">🎉 칭찬 사유를 입력하세요</div>
-            <input type="text" class="modal-input" id="praiseInput" placeholder="예: 프로젝트 마감 성공!">
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closePraiseModal()">취소</button>
-                <button class="modal-btn modal-btn-save" onclick="savePraise()">저장</button>
-            </div>
-        </div>
-    </div>
+    <div class="modal" id="praiseModal">
+        <div class="modal-content">
+            <div class="modal-header">🎉 칭찬 사유를 입력하세요</div>
+            <input type="text" class="modal-input" id="praiseInput" placeholder="예: 프로젝트 마감 성공!">
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closePraiseModal()">취소</button>
+                <button class="modal-btn modal-btn-save" onclick="savePraise()">저장</button>
+            </div>
+        </div>
+    </div>
 
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-header">🗑️ 칭찬 삭제</div>
-            <div class="modal-text" id="deleteModalText">이 칭찬을 삭제하시겠습니까?</div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">취소</button>
-                <button class="modal-btn modal-btn-delete" onclick="confirmDelete()">삭제</button>
-            </div>
-        </div>
-    </div>
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">🗑️ 칭찬 삭제</div>
+            <div class="modal-text" id="deleteModalText">이 칭찬을 삭제하시겠습니까?</div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">취소</button>
+                <button class="modal-btn modal-btn-delete" onclick="confirmDelete()">삭제</button>
+            </div>
+        </div>
+    </div>
 
-    <div class="celebration-modal" id="celebrationModal">
-        <div class="celebration-content">
-            <div class="celebration-emoji">🎉</div>
-            <div class="celebration-title" id="celebrationTitle">축하합니다!</div>
-            <div class="celebration-message" id="celebrationMessage"></div>
-            <button class="celebration-btn" onclick="closeCelebration()">확인 (새 포도 시작)</button>
-        </div>
-    </div>
+    <div class="celebration-modal" id="celebrationModal">
+        <div class="celebration-content">
+            <div class="celebration-emoji">🎉</div>
+            <div class="celebration-title" id="celebrationTitle">축하합니다!</div>
+            <div class="celebration-message" id="celebrationMessage"></div>
+            <button class="celebration-btn" onclick="closeCelebration()">확인 (새 포도 시작)</button>
+        </div>
+    </div>
 
-    <div class="modal" id="historyModal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">📜 명예의 전당</div>
-            <div class="modal-text" style="text-align: left; margin-bottom: 10px; font-size: 0.95em;">
-                이전에 완성한 포도송이들의 기록입니다.
-            </div>
-            <div class="history-list" id="historyList">
-                </div>
-            <div class="modal-buttons" style="margin-top: 20px;">
-                <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('historyModal').classList.remove('active')">닫기</button>
-            </div>
-        </div>
-    </div>
+    <div class="modal" id="historyModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">📜 명예의 전당</div>
+            <div class="modal-text" style="text-align: left; margin-bottom: 10px; font-size: 0.95em;">
+                이전에 완성한 포도송이들의 기록입니다.
+            </div>
+            <div class="history-list" id="historyList">
+                </div>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('historyModal').classList.remove('active')">닫기</button>
+            </div>
+        </div>
+    </div>
 
-    <div class="confetti-container" id="confettiContainer"></div>
-    
-    <input type="file" id="jsonUpload" accept=".json" style="display:none" onchange="restoreData(this)">
-    <div class="backup-controls">
-        <button class="btn-mini" onclick="document.getElementById('jsonUpload').click()">📂 데이터 복원 (JSON)</button>
-    </div>
+    <div class="confetti-container" id="confettiContainer"></div>
+    
+    <input type="file" id="jsonUpload" accept=".json" style="display:none" onchange="restoreData(this)">
+    <div class="backup-controls">
+        <button class="btn-mini" onclick="document.getElementById('jsonUpload').click()">📂 데이터 복원 (JSON)</button>
+    </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs",
-            authDomain: "grape-board-7065e.firebaseapp.com",
-            projectId: "grape-board-7065e",
-            storageBucket: "grape-board-7065e.firebasestorage.app",
-            messagingSenderId: "658561934916",
-            appId: "1:658561934916:web:3f81caca7f24cd3ffe3e11",
-            measurementId: "G-590B327N90"
-        };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs",
+            authDomain: "grape-board-7065e.firebaseapp.com",
+            projectId: "grape-board-7065e",
+            storageBucket: "grape-board-7065e.firebasestorage.app",
+            messagingSenderId: "658561934916",
+            appId: "1:658561934916:web:3f81caca7f24cd3ffe3e11",
+            measurementId: "G-590B327N90"
+        };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const membersCollection = collection(db, "members");
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const membersCollection = collection(db, "members");
 
-        window.db = db;
-        
-        const GRAPE_PATTERN = [6, 5, 5, 4, 4, 3, 2, 1];
-        const TOTAL_GRAPES = 30;
-        const DELETE_PASSWORD = "비즈옵스짱"; 
-        
-        let members = [];
-        let currentGrapeData = null;
-        let deleteGrapeData = null;
+        window.db = db;
+        
+        const GRAPE_PATTERN = [6, 5, 5, 4, 4, 3, 2, 1];
+        const TOTAL_GRAPES = 30;
+        const DELETE_PASSWORD = "비즈옵스짱"; 
+        
+        let members = [];
+        let currentGrapeData = null;
+        let deleteGrapeData = null;
 
-        const q = query(membersCollection, orderBy("createdAt"));
-        
-        onSnapshot(q, (snapshot) => {
-            members = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            
-            console.log("Firebase에서 데이터 동기화 완료:", members.length);
-            renderMembers();
-        }, (error) => {
-            console.error("데이터 불러오기 실패:", error);
-        });
+        const q = query(membersCollection, orderBy("createdAt"));
+        
+        onSnapshot(q, (snapshot) => {
+            members = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            console.log("Firebase에서 데이터 동기화 완료:", members.length);
+            renderMembers();
+        }, (error) => {
+            console.error("데이터 불러오기 실패:", error);
+        });
 
-        window.handleAddMember = async function() {
-            const newMember = {
-                name: `팀원 ${members.length + 1}`,
-                photo: null,
-                grapes: Array(TOTAL_GRAPES).fill(null),
-                completionCount: 0,
-                history: [], // 과거 기록 저장용
-                createdAt: Date.now()
-            };
-            
-            try {
-                await addDoc(membersCollection, newMember);
-            } catch (e) {
-                alert("멤버 추가 실패: " + e.message);
-            }
-        };
+        window.handleAddMember = async function() {
+            const newMember = {
+                name: `팀원 ${members.length + 1}`,
+                photo: null,
+                grapes: Array(TOTAL_GRAPES).fill(null),
+                completionCount: 0,
+                history: [], // 과거 기록 저장용
+                createdAt: Date.now()
+            };
+            
+            try {
+                await addDoc(membersCollection, newMember);
+            } catch (e) {
+                alert("멤버 추가 실패: " + e.message);
+            }
+        };
 
-        window.removeMember = async function(id) {
-            const password = prompt("팀원을 삭제하려면 비밀번호를 입력하세요:");
-            if (password !== DELETE_PASSWORD) {
-                alert("비밀번호가 일치하지 않습니다.");
-                return;
-            }
+        window.removeMember = async function(id) {
+            const password = prompt("팀원을 삭제하려면 비밀번호를 입력하세요:");
+            if (password !== DELETE_PASSWORD) {
+                alert("비밀번호가 일치하지 않습니다.");
+                return;
+            }
 
-            if (confirm('정말 이 팀원을 삭제하시겠습니까?')) {
-                try {
-                    await deleteDoc(doc(db, "members", id));
-                } catch (e) {
-                    alert("삭제 실패: " + e.message);
-                }
-            }
-        };
+            if (confirm('정말 이 팀원을 삭제하시겠습니까?')) {
+                try {
+                    await deleteDoc(doc(db, "members", id));
+                } catch (e) {
+                    alert("삭제 실패: " + e.message);
+                }
+            }
+        };
 
-        window.updateMemberName = async function(id, newName) {
-            try {
-                await updateDoc(doc(db, "members", id), { name: newName });
-            } catch (e) {
-                console.error("이름 업데이트 실패", e);
-            }
-        };
+        window.updateMemberName = async function(id, newName) {
+            try {
+                await updateDoc(doc(db, "members", id), { name: newName });
+            } catch (e) {
+                console.error("이름 업데이트 실패", e);
+            }
+        };
 
-        window.uploadPhoto = function(id, event) {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.size > 1024 * 1024) {
-                    alert("이미지 크기가 너무 큽니다. 1MB 이하의 이미지를 사용해주세요.");
-                    return;
-                }
+        window.uploadPhoto = function(id, event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 1024 * 1024) {
+                    alert("이미지 크기가 너무 큽니다. 1MB 이하의 이미지를 사용해주세요.");
+                    return;
+                }
 
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        await updateDoc(doc(db, "members", id), { photo: e.target.result });
-                    } catch (err) {
-                        alert("이미지 저장 실패: 용량이 너무 클 수 있습니다.");
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        };
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        await updateDoc(doc(db, "members", id), { photo: e.target.result });
+                    } catch (err) {
+                        alert("이미지 저장 실패: 용량이 너무 클 수 있습니다.");
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
-        window.clickGrape = function(memberId, grapeIndex) {
-            const member = members.find(m => m.id === memberId);
-            if (!member) return;
+        window.clickGrape = function(memberId, grapeIndex) {
+            const member = members.find(m => m.id === memberId);
+            if (!member) return;
 
-            const grape = member.grapes[grapeIndex];
-            const isFilled = grape !== null && typeof grape === 'object' && grape.reason && grape.reason.trim() !== '';
+            const grape = member.grapes[grapeIndex];
+            const isFilled = grape !== null && typeof grape === 'object' && grape.reason && grape.reason.trim() !== '';
 
-            if (isFilled) {
-                deleteGrapeData = { memberId, grapeIndex };
-                let displayText = `${grape.reason}<br><br>📅 ${grape.dateString}`;
-                document.getElementById('deleteModalText').innerHTML = `<strong>"${displayText}"</strong><br><br>이 칭찬을 삭제하시겠습니까?`;
-                document.getElementById('deleteModal').classList.add('active');
-            } else {
-                currentGrapeData = { memberId, grapeIndex };
-                document.getElementById('praiseModal').classList.add('active');
-                document.getElementById('praiseInput').value = '';
-                document.getElementById('praiseInput').focus();
-            }
-        };
+            if (isFilled) {
+                deleteGrapeData = { memberId, grapeIndex };
+                let displayText = `${grape.reason}<br><br>📅 ${grape.dateString}`;
+                document.getElementById('deleteModalText').innerHTML = `<strong>"${displayText}"</strong><br><br>이 칭찬을 삭제하시겠습니까?`;
+                document.getElementById('deleteModal').classList.add('active');
+            } else {
+                currentGrapeData = { memberId, grapeIndex };
+                document.getElementById('praiseModal').classList.add('active');
+                document.getElementById('praiseInput').value = '';
+                document.getElementById('praiseInput').focus();
+            }
+        };
 
-        window.savePraise = async function() {
-            const reason = document.getElementById('praiseInput').value.trim();
-            if (!reason) {
-                alert('칭찬 사유를 입력해주세요!');
-                return;
-            }
-            if (!currentGrapeData) return;
+        window.savePraise = async function() {
+            const reason = document.getElementById('praiseInput').value.trim();
+            if (!reason) {
+                alert('칭찬 사유를 입력해주세요!');
+                return;
+            }
+            if (!currentGrapeData) return;
 
-            const { memberId, grapeIndex } = currentGrapeData;
-            const member = members.find(m => m.id === memberId);
-            
-            if (member) {
-                const now = new Date();
-                const newGrape = {
-                    reason: reason,
-                    timestamp: now.getTime(),
-                    dateString: now.toLocaleString('ko-KR', {
-                        year: 'numeric', month: '2-digit', day: '2-digit',
-                        hour: '2-digit', minute: '2-digit'
-                    })
-                };
+            const { memberId, grapeIndex } = currentGrapeData;
+            const member = members.find(m => m.id === memberId);
+            
+            if (member) {
+                const now = new Date();
+                const newGrape = {
+                    reason: reason,
+                    timestamp: now.getTime(),
+                    dateString: now.toLocaleString('ko-KR', {
+                        year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit'
+                    })
+                };
 
-                const newGrapes = [...member.grapes];
-                newGrapes[grapeIndex] = newGrape;
+                const newGrapes = [...member.grapes];
+                newGrapes[grapeIndex] = newGrape;
 
-                closePraiseModal();
+                closePraiseModal();
 
-                try {
-                    await updateDoc(doc(db, "members", memberId), { grapes: newGrapes });
-                    
-                    showSaveNotification('저장되었습니다');
-                    setTimeout(() => createQuickConfetti(memberId), 100);
-                    const grapeElement = document.querySelector(`[data-member-id="${memberId}"][data-grape-index="${grapeIndex}"]`);
-                    if (grapeElement) {
-                        grapeElement.classList.add('sparkle');
-                        setTimeout(() => grapeElement.classList.remove('sparkle'), 600);
-                    }
+                try {
+                    await updateDoc(doc(db, "members", memberId), { grapes: newGrapes });
+                    
+                    showSaveNotification('저장되었습니다');
+                    setTimeout(() => createQuickConfetti(memberId), 100);
+                    const grapeElement = document.querySelector(`[data-member-id="${memberId}"][data-grape-index="${grapeIndex}"]`);
+                    if (grapeElement) {
+                        grapeElement.classList.add('sparkle');
+                        setTimeout(() => grapeElement.classList.remove('sparkle'), 600);
+                    }
 
-                    const filledCount = newGrapes.filter(g => g !== null && g.reason).length;
-                    if (filledCount === TOTAL_GRAPES) {
-                        currentGrapeData = { memberId }; // 축하 모달을 위해 ID 유지
-                        showCelebration(member);
-                    }
-                } catch (e) {
-                    alert("저장 실패: " + e.message);
-                }
-            }
-        };
+                    const filledCount = newGrapes.filter(g => g !== null && g.reason).length;
+                    if (filledCount === TOTAL_GRAPES) {
+                        currentGrapeData = { memberId }; // 축하 모달을 위해 ID 유지
+                        showCelebration(member);
+                    }
+                } catch (e) {
+                    alert("저장 실패: " + e.message);
+                }
+            }
+        };
 
-        window.confirmDelete = async function() {
-            if (!deleteGrapeData) return;
+        window.confirmDelete = async function() {
+            if (!deleteGrapeData) return;
 
-            const password = prompt("칭찬을 삭제하려면 비밀번호를 입력하세요:");
-            if (password !== DELETE_PASSWORD) {
-                alert("비밀번호가 일치하지 않습니다.");
-                return;
-            }
+            const password = prompt("칭찬을 삭제하려면 비밀번호를 입력하세요:");
+            if (password !== DELETE_PASSWORD) {
+                alert("비밀번호가 일치하지 않습니다.");
+                return;
+            }
 
-            const { memberId, grapeIndex } = deleteGrapeData;
-            const member = members.find(m => m.id === memberId);
-            
-            if (member) {
-                const newGrapes = [...member.grapes];
-                newGrapes[grapeIndex] = null;
-                
-                closeDeleteModal();
-                try {
-                    await updateDoc(doc(db, "members", memberId), { grapes: newGrapes });
-                } catch (e) {
-                    alert("삭제 실패: " + e.message);
-                }
-            }
-        };
+            const { memberId, grapeIndex } = deleteGrapeData;
+            const member = members.find(m => m.id === memberId);
+            
+            if (member) {
+                const newGrapes = [...member.grapes];
+                newGrapes[grapeIndex] = null;
+                
+                closeDeleteModal();
+                try {
+                    await updateDoc(doc(db, "members", memberId), { grapes: newGrapes });
+                } catch (e) {
+                    alert("삭제 실패: " + e.message);
+                }
+            }
+        };
 
-        // --- 히스토리 보기 기능 ---
-        window.showHistory = function(memberId) {
-            const member = members.find(m => m.id === memberId);
-            if (!member) return;
+        // --- 히스토리 보기 기능 ---
+        window.showHistory = function(memberId) {
+            const member = members.find(m => m.id === memberId);
+            if (!member) return;
 
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
 
-            if (!member.history || member.history.length === 0) {
-                historyList.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;">아직 완성된 기록이 없습니다.</div>';
-            } else {
-                // 최근 기록부터 보여주기
-                const reversedHistory = [...member.history].reverse();
-                
-                reversedHistory.forEach((record) => {
-                    const roundDiv = document.createElement('div');
-                    roundDiv.className = 'history-round';
-                    
-                    const dateStr = new Date(record.completedAt).toLocaleDateString('ko-KR');
-                    
-                    let html = `<div class="history-title">🏆 ${record.round}회차 완성 (${dateStr})</div>`;
-                    
-                    // 칭찬 내용 필터링
-                    const validGrapes = record.grapes.filter(g => g && g.reason);
-                    
-                    if (validGrapes.length === 0) {
-                        html += '<div class="history-item">기록된 칭찬이 없습니다.</div>';
-                    } else {
-                        validGrapes.forEach(g => {
-                             html += `
-                                <div class="history-item">
-                                    ${g.reason}
-                                    <div class="history-date">${g.dateString}</div>
-                                </div>
-                             `;
-                        });
-                    }
-                    
-                    roundDiv.innerHTML = html;
-                    historyList.appendChild(roundDiv);
-                });
-            }
+            if (!member.history || member.history.length === 0) {
+                historyList.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;">아직 완성된 기록이 없습니다.</div>';
+            } else {
+                // 최근 기록부터 보여주기
+                const reversedHistory = [...member.history].reverse();
+                
+                reversedHistory.forEach((record) => {
+                    const roundDiv = document.createElement('div');
+                    roundDiv.className = 'history-round';
+                    
+                    const dateStr = new Date(record.completedAt).toLocaleDateString('ko-KR');
+                    
+                    let html = `<div class="history-title">🏆 ${record.round}회차 완성 (${dateStr})</div>`;
+                    
+                    // 칭찬 내용 필터링
+                    const validGrapes = record.grapes.filter(g => g && g.reason);
+                    
+                    if (validGrapes.length === 0) {
+                        html += '<div class="history-item">기록된 칭찬이 없습니다.</div>';
+                    } else {
+                        validGrapes.forEach(g => {
+                             html += `
+                                <div class="history-item">
+                                    ${g.reason}
+                                    <div class="history-date">${g.dateString}</div>
+                                </div>
+                             `;
+                        });
+                    }
+                    
+                    roundDiv.innerHTML = html;
+                    historyList.appendChild(roundDiv);
+                });
+            }
 
-            document.getElementById('historyModal').classList.add('active');
-        };
+            document.getElementById('historyModal').classList.add('active');
+        };
 
-        window.restoreData = function(input) {
-            const file = input.files[0];
-            if(!file) return;
+        window.restoreData = function(input) {
+            const file = input.files[0];
+            if(!file) return;
 
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const parsedData = JSON.parse(e.target.result);
-                    let targetList = [];
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const parsedData = JSON.parse(e.target.result);
+                    let targetList = [];
 
-                    if (parsedData.data && Array.isArray(parsedData.data)) {
-                        targetList = parsedData.data;
-                    } else if (Array.isArray(parsedData)) {
-                        targetList = parsedData;
-                    } else {
-                        throw new Error("지원하지 않는 데이터 형식입니다.");
-                    }
+                    if (parsedData.data && Array.isArray(parsedData.data)) {
+                        targetList = parsedData.data;
+                    } else if (Array.isArray(parsedData)) {
+                        targetList = parsedData;
+                    } else {
+                        throw new Error("지원하지 않는 데이터 형식입니다.");
+                    }
 
-                    if(confirm(`총 ${targetList.length}명의 데이터를 복원하시겠습니까? (기존 데이터에 추가됩니다)`)) {
-                        let successCount = 0;
-                        for(const item of targetList) {
-                            let sanitizedGrapes = Array(TOTAL_GRAPES).fill(null);
-                            if (Array.isArray(item.grapes)) {
-                                sanitizedGrapes = item.grapes.map(g => {
-                                    if (g && typeof g === 'object' && g.reason && g.reason.trim().length > 0) {
-                                        return g;
-                                    }
-                                    return null;
-                                });
-                            }
+                    if(confirm(`총 ${targetList.length}명의 데이터를 복원하시겠습니까? (기존 데이터에 추가됩니다)`)) {
+                        let successCount = 0;
+                        for(const item of targetList) {
+                            let sanitizedGrapes = Array(TOTAL_GRAPES).fill(null);
+                            if (Array.isArray(item.grapes)) {
+                                sanitizedGrapes = item.grapes.map(g => {
+                                    if (g && typeof g === 'object' && g.reason && g.reason.trim().length > 0) {
+                                        return g;
+                                    }
+                                    return null;
+                                });
+                            }
 
-                            const memberData = {
-                                name: item.name || "복원된 팀원",
-                                photo: item.photo || null,
-                                grapes: sanitizedGrapes,
-                                completionCount: item.completionCount || 0,
-                                history: item.history || [], 
-                                createdAt: Date.now() + successCount
-                            };
-                            await addDoc(membersCollection, memberData);
-                            successCount++;
-                        }
-                        alert(`${successCount}명의 데이터가 복원되었습니다!`);
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert("파일 형식이 올바르지 않거나 복원 중 오류가 발생했습니다: " + err.message);
-                }
-                input.value = '';
-            };
-            reader.readAsText(file);
-        };
+                            const memberData = {
+                                name: item.name || "복원된 팀원",
+                                photo: item.photo || null,
+                                grapes: sanitizedGrapes,
+                                completionCount: item.completionCount || 0,
+                                history: item.history || [], 
+                                createdAt: Date.now() + successCount
+                            };
+                            await addDoc(membersCollection, memberData);
+                            successCount++;
+                        }
+                        alert(`${successCount}명의 데이터가 복원되었습니다!`);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("파일 형식이 올바르지 않거나 복원 중 오류가 발생했습니다: " + err.message);
+                }
+                input.value = '';
+            };
+            reader.readAsText(file);
+        };
 
-        window.closePraiseModal = function() {
-            document.getElementById('praiseModal').classList.remove('active');
-            currentGrapeData = null;
-        };
-        window.closeDeleteModal = function() {
-            document.getElementById('deleteModal').classList.remove('active');
-            deleteGrapeData = null;
-        };
-        
-        window.closeCelebration = async function() {
-            document.getElementById('celebrationModal').classList.remove('active');
-            
-            for(let i=0; i<3; i++) {
-                setTimeout(createConfetti, i*300);
-            }
+        window.closePraiseModal = function() {
+            document.getElementById('praiseModal').classList.remove('active');
+            currentGrapeData = null;
+        };
+        window.closeDeleteModal = function() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteGrapeData = null;
+        };
+        
+        window.closeCelebration = async function() {
+            document.getElementById('celebrationModal').classList.remove('active');
+            
+            for(let i=0; i<3; i++) {
+                setTimeout(createConfetti, i*300);
+            }
 
-            if (currentGrapeData && currentGrapeData.memberId) {
-                const member = members.find(m => m.id === currentGrapeData.memberId);
-                if (member) {
-                    try {
-                        const newCount = (member.completionCount || 0) + 1;
-                        const currentHistory = member.history || [];
-                        
-                        const historyEntry = {
-                            round: newCount,
-                            completedAt: Date.now(),
-                            grapes: member.grapes
-                        };
-                        
-                        await updateDoc(doc(db, "members", member.id), {
-                            completionCount: newCount,
-                            grapes: Array(TOTAL_GRAPES).fill(null),
-                            history: [...currentHistory, historyEntry]
-                        });
-                        
-                    } catch (e) { 
-                        console.error("초기화 실패:", e); 
-                        alert("데이터 업데이트 중 오류가 발생했습니다.");
-                    }
-                }
-            }
-        };
+            if (currentGrapeData && currentGrapeData.memberId) {
+                const member = members.find(m => m.id === currentGrapeData.memberId);
+                if (member) {
+                    try {
+                        const newCount = (member.completionCount || 0) + 1;
+                        const currentHistory = member.history || [];
+                        
+                        const historyEntry = {
+                            round: newCount,
+                            completedAt: Date.now(),
+                            grapes: member.grapes
+                        };
+                        
+                        await updateDoc(doc(db, "members", member.id), {
+                            completionCount: newCount,
+                            grapes: Array(TOTAL_GRAPES).fill(null),
+                            history: [...currentHistory, historyEntry]
+                        });
+                        
+                    } catch (e) { 
+                        console.error("초기화 실패:", e); 
+                        alert("데이터 업데이트 중 오류가 발생했습니다.");
+                    }
+                }
+            }
+        };
 
-        function showSaveNotification(message) {
-            const existing = document.getElementById('saveNotification');
-            if (existing) existing.remove();
-            const notification = document.createElement('div');
-            notification.id = 'saveNotification';
-            notification.innerHTML = `<div style="display: flex; align-items: center; gap: 10px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span>${message}</span></div>`;
-            notification.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 32px; border-radius: 12px; box-shadow: 0 10px 40px rgba(16, 185, 129, 0.5); z-index: 100001; font-weight: 600; font-size: 16px; animation: slideInDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), fadeOut 0.3s ease 2.7s forwards;`;
-            document.body.appendChild(notification);
-            setTimeout(() => { if (notification.parentNode) notification.remove(); }, 3000);
-        }
+        function showSaveNotification(message) {
+            const existing = document.getElementById('saveNotification');
+            if (existing) existing.remove();
+            const notification = document.createElement('div');
+            notification.id = 'saveNotification';
+            notification.innerHTML = `<div style="display: flex; align-items: center; gap: 10px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span>${message}</span></div>`;
+            notification.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 32px; border-radius: 12px; box-shadow: 0 10px 40px rgba(16, 185, 129, 0.5); z-index: 100001; font-weight: 600; font-size: 16px; animation: slideInDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), fadeOut 0.3s ease 2.7s forwards;`;
+            document.body.appendChild(notification);
+            setTimeout(() => { if (notification.parentNode) notification.remove(); }, 3000);
+        }
 
-        function renderMembers() {
-            const container = document.getElementById('membersContainer');
-            container.innerHTML = '';
-            
-            if(members.length === 0) {
-                 container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: #6b46c1;">팀원을 추가해주세요! 🍇</div>';
-                 return;
-            }
+        function renderMembers() {
+            const container = document.getElementById('membersContainer');
+            container.innerHTML = '';
+            
+            if(members.length === 0) {
+                 container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: #6b46c1;">팀원을 추가해주세요! 🍇</div>';
+                 return;
+            }
 
-            let maxScore = -1;
-            const memberScores = members.map(m => {
-                const currentFilled = (m.grapes || []).filter(g => g !== null && g.reason).length;
-                const score = (m.completionCount || 0) * 30 + currentFilled;
-                if(score > maxScore) maxScore = score;
-                return { id: m.id, score: score };
-            });
-            
-            members.forEach(member => {
-                const scoreObj = memberScores.find(s => s.id === member.id);
-                const isKing = maxScore > 0 && scoreObj.score === maxScore;
-                const isGoldTier = (member.completionCount || 0) >= 1;
+            let maxScore = -1;
+            const memberScores = members.map(m => {
+                const currentFilled = (m.grapes || []).filter(g => g !== null && g.reason).length;
+                const score = (m.completionCount || 0) * 30 + currentFilled;
+                if(score > maxScore) maxScore = score;
+                return { id: m.id, score: score };
+            });
+            
+            members.forEach(member => {
+                const scoreObj = memberScores.find(s => s.id === member.id);
+                const isKing = maxScore > 0 && scoreObj.score === maxScore;
+                const isGoldTier = (member.completionCount || 0) >= 1;
 
-                const card = document.createElement('div');
-                card.className = 'member-card';
-                card.setAttribute('data-member-card-id', member.id);
-                
-                card.innerHTML = `
-                    <button class="btn-remove" onclick="removeMember('${member.id}')">×</button>
-                    <div class="member-header">
-                        <div class="profile-section">
-                            <div class="profile-image-container">
-                                ${isKing ? '<div class="crown-icon">👑</div>' : ''}
-                                
-                                ${member.completionCount > 0 
-                                    ? `<div class="badge-container" onclick="showHistory('${member.id}')" title="누르면 과거 칭찬 내역을 볼 수 있습니다">
-                                         <div class="badge-text">${member.completionCount}회 완성</div>
-                                       </div>` 
-                                    : ''}
-                                
-                                ${member.photo 
-                                    ? `<img src="${member.photo}" class="profile-image" onclick="document.getElementById('upload-${member.id}').click()">` 
-                                    : `<div class="profile-placeholder" onclick="document.getElementById('upload-${member.id}').click()">👤</div>`
-                                }
-                                <input type="file" id="upload-${member.id}" class="profile-upload" accept="image/*" onchange="uploadPhoto('${member.id}', event)">
-                            </div>
-                            <input type="text" class="member-name-input" value="${member.name}" onchange="updateMemberName('${member.id}', this.value)">
-                            
-                            <button class="ai-summary-btn" onclick="generateAISummary('${member.id}')">
-                                🤖 AI 분석 보기
-                            </button>
-                            <div id="ai-result-${member.id}" class="ai-result-box"></div>
+                const card = document.createElement('div');
+                card.className = 'member-card';
+                card.setAttribute('data-member-card-id', member.id);
+                
+                card.innerHTML = `
+                    <button class="btn-remove" onclick="removeMember('${member.id}')">×</button>
+                    <div class="member-header">
+                        <div class="profile-section">
+                            <div class="profile-image-container">
+                                ${isKing ? '<div class="crown-icon">👑</div>' : ''}
+                                
+                                ${member.completionCount > 0 
+                                    ? `<div class="badge-container" onclick="showHistory('${member.id}')" title="누르면 과거 칭찬 내역을 볼 수 있습니다">
+                                         <div class="badge-text">${member.completionCount}회 완성</div>
+                                       </div>` 
+                                    : ''}
+                                
+                                ${member.photo 
+                                    ? `<img src="${member.photo}" class="profile-image" onclick="document.getElementById('upload-${member.id}').click()">` 
+                                    : `<div class="profile-placeholder" onclick="document.getElementById('upload-${member.id}').click()">👤</div>`
+                                }
+                                <input type="file" id="upload-${member.id}" class="profile-upload" accept="image/*" onchange="uploadPhoto('${member.id}', event)">
+                            </div>
+                            <input type="text" class="member-name-input" value="${member.name}" onchange="updateMemberName('${member.id}', this.value)">
+                            
+                            <button class="ai-summary-btn" onclick="generateAISummary('${member.id}')">
+                                🤖 AI 분석 보기
+                            </button>
+                            <div id="ai-result-${member.id}" class="ai-result-box"></div>
 
-                        </div>
-                    </div>
-                    <div class="grape-board">
-                        <div class="grape-header">
-                            <div class="grape-leaves">
-                                <div class="leaf ${isGoldTier ? 'gold' : ''}"></div>
-                                <div class="leaf ${isGoldTier ? 'gold' : ''}"></div>
-                            </div>
-                            <div class="grape-stem"></div>
-                            <div class="grape-title">칭찬포도</div>
-                        </div>
-                        <div class="grape-cluster">
-                            ${renderGrapeCluster(member)}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+                        </div>
+                    </div>
+                    <div class="grape-board">
+                        <div class="grape-header">
+                            <div class="grape-leaves">
+                                <div class="leaf ${isGoldTier ? 'gold' : ''}"></div>
+                                <div class="leaf ${isGoldTier ? 'gold' : ''}"></div>
+                            </div>
+                            <div class="grape-stem"></div>
+                            <div class="grape-title">칭찬포도</div>
+                        </div>
+                        <div class="grape-cluster">
+                            ${renderGrapeCluster(member)}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
 
-        function renderGrapeCluster(member) {
-            let html = '';
-            let grapeIndex = 0;
-            GRAPE_PATTERN.forEach(count => {
-                html += '<div class="grape-row">';
-                for (let i = 0; i < count; i++) {
-                    const grape = member.grapes[grapeIndex];
-                    const filled = grape !== null && typeof grape === 'object' && grape.reason && grape.reason.trim() !== '';
+        function renderGrapeCluster(member) {
+            let html = '';
+            let grapeIndex = 0;
+            GRAPE_PATTERN.forEach(count => {
+                html += '<div class="grape-row">';
+                for (let i = 0; i < count; i++) {
+                    const grape = member.grapes[grapeIndex];
+                    const filled = grape !== null && typeof grape === 'object' && grape.reason && grape.reason.trim() !== '';
 
-                    let displayText = '';
-                    if (filled) {
-                         displayText = `${grape.reason}\n\n📅 ${grape.dateString}`;
-                    }
-                    
-                    html += `<div class="grape ${filled ? 'filled' : ''}" data-member-id="${member.id}" data-grape-index="${grapeIndex}" ${filled ? `data-reason="${displayText.replace(/"/g, '&quot;')}"` : ''} onclick="clickGrape('${member.id}', ${grapeIndex})">${grapeIndex + 1}</div>`;
-                    grapeIndex++;
-                }
-                html += '</div>';
-            });
-            return html;
-        }
+                    let displayText = '';
+                    if (filled) {
+                         displayText = `${grape.reason}\n\n📅 ${grape.dateString}`;
+                    }
+                    
+                    html += `<div class="grape ${filled ? 'filled' : ''}" data-member-id="${member.id}" data-grape-index="${grapeIndex}" ${filled ? `data-reason="${displayText.replace(/"/g, '&quot;')}"` : ''} onclick="clickGrape('${member.id}', ${grapeIndex})">${grapeIndex + 1}</div>`;
+                    grapeIndex++;
+                }
+                html += '</div>';
+            });
+            return html;
+        }
 
-        window.showCelebration = function(member) {
-            createConfetti();
-            document.getElementById('celebrationTitle').textContent = `🎉 축하합니다! 🎉`;
-            document.getElementById('celebrationMessage').textContent = `${member.name}님의 포도가 완성되었습니다!`;
-            document.getElementById('celebrationModal').classList.add('active');
-        };
-        
-        function createConfetti() {
-            const container = document.getElementById('confettiContainer');
-            const colors = ['#fbbf24', '#f59e0b', '#7c3aed', '#6b46c1', '#ec4899', '#ef4444', '#22c55e'];
-            for (let i = 0; i < 150; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.classList.add('confetti');
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                    container.appendChild(confetti);
-                    setTimeout(() => confetti.remove(), 3000);
-                }, i * 20);
-            }
-        }
-        
-        window.createQuickConfetti = function(memberId) {
-            const memberCard = document.querySelector(`[data-member-card-id="${memberId}"]`);
-            if (!memberCard) return;
-            const grapeBoard = memberCard.querySelector('.grape-board');
-            if (!grapeBoard) return;
-            const existingContainer = grapeBoard.querySelector('.grape-confetti-container');
-            if (existingContainer) existingContainer.remove();
-            const confettiContainer = document.createElement('div');
-            confettiContainer.className = 'grape-confetti-container';
-            grapeBoard.appendChild(confettiContainer);
-            
-            for(let i=0; i<20; i++) {
-                 const p = document.createElement('div');
-                 p.className = 'grape-confetti';
-                 p.style.width = '8px'; p.style.height='8px'; p.style.background='#fbbf24';
-                 p.style.left = '50%'; p.style.top='50%';
-                 p.style.animation = `grapeConfettiFall 1s ease-out forwards`;
-                 confettiContainer.appendChild(p);
-            }
-        }
+        window.showCelebration = function(member) {
+            createConfetti();
+            document.getElementById('celebrationTitle').textContent = `🎉 축하합니다! 🎉`;
+            document.getElementById('celebrationMessage').textContent = `${member.name}님의 포도가 완성되었습니다!`;
+            document.getElementById('celebrationModal').classList.add('active');
+        };
+        
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#fbbf24', '#f59e0b', '#7c3aed', '#6b46c1', '#ec4899', '#ef4444', '#22c55e'];
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    container.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 20);
+            }
+        }
+        
+        window.createQuickConfetti = function(memberId) {
+            const memberCard = document.querySelector(`[data-member-card-id="${memberId}"]`);
+            if (!memberCard) return;
+            const grapeBoard = memberCard.querySelector('.grape-board');
+            if (!grapeBoard) return;
+            const existingContainer = grapeBoard.querySelector('.grape-confetti-container');
+            if (existingContainer) existingContainer.remove();
+            const confettiContainer = document.createElement('div');
+            confettiContainer.className = 'grape-confetti-container';
+            grapeBoard.appendChild(confettiContainer);
+            
+            for(let i=0; i<20; i++) {
+                 const p = document.createElement('div');
+                 p.className = 'grape-confetti';
+                 p.style.width = '8px'; p.style.height='8px'; p.style.background='#fbbf24';
+                 p.style.left = '50%'; p.style.top='50%';
+                 p.style.animation = `grapeConfettiFall 1s ease-out forwards`;
+                 confettiContainer.appendChild(p);
+            }
+        }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && document.getElementById('praiseModal').classList.contains('active')) {
-                savePraise();
-            }
-        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.getElementById('praiseModal').classList.contains('active')) {
+                savePraise();
+            }
+        });
 
-        // AI 결과 파싱 함수 (가독성 개선)
-        function parseAIResult(text) {
-            // 1, 2, 3으로 시작하는 섹션을 찾아서 구조화
-            const lines = text.split('\n');
-            let html = '';
-            let currentSection = '';
-            let sectionContent = '';
-            
-            lines.forEach((line, index) => {
-                const trimmedLine = line.trim();
-                
-                // 1. 또는 2. 또는 3. 으로 시작하는 경우 (새로운 섹션)
-                const sectionMatch = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
-                
-                if (sectionMatch) {
-                    // 이전 섹션 저장
-                    if (currentSection) {
-                        html += `<div class="ai-section">
-                                    <div class="ai-section-title">${currentSection}</div>
-                                    <div class="ai-section-content">${sectionContent}</div>
-                                 </div>`;
-                    }
-                    
-                    // 새로운 섹션 시작
-                    const sectionNum = sectionMatch[1];
-                    const sectionTitle = sectionMatch[2];
-                    currentSection = `${sectionNum}. ${sectionTitle}`;
-                    sectionContent = '';
-                } else if (trimmedLine) {
-                    // 섹션 내용 추가
-                    if (sectionContent) sectionContent += '<br>';
-                    sectionContent += trimmedLine;
-                } else if (!currentSection && trimmedLine) {
-                    // 섹션 구분 없이 시작하는 경우
-                    html += trimmedLine + '<br>';
-                }
-            });
-            
-            // 마지막 섹션 저장
-            if (currentSection) {
-                html += `<div class="ai-section">
-                            <div class="ai-section-title">${currentSection}</div>
-                            <div class="ai-section-content">${sectionContent}</div>
-                         </div>`;
-            }
-            
-            // 섹션이 없는 경우 기본 포맷팅
-            if (!html) {
-                html = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
-            }
-            
-            return html;
-        }
+        // AI 결과 파싱 함수 (가독성 개선)
+        function parseAIResult(text) {
+            // 1, 2, 3으로 시작하는 섹션을 찾아서 구조화
+            const lines = text.split('\n');
+            let html = '';
+            let currentSection = '';
+            let sectionContent = '';
+            
+            lines.forEach((line, index) => {
+                const trimmedLine = line.trim();
+                
+                // 1. 또는 2. 또는 3. 으로 시작하는 경우 (새로운 섹션)
+                const sectionMatch = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
+                
+                if (sectionMatch) {
+                    // 이전 섹션 저장
+                    if (currentSection) {
+                        html += `<div class="ai-section">
+                                    <div class="ai-section-title">${currentSection}</div>
+                                    <div class="ai-section-content">${sectionContent}</div>
+                                 </div>`;
+                    }
+                    
+                    // 새로운 섹션 시작
+                    const sectionNum = sectionMatch[1];
+                    const sectionTitle = sectionMatch[2];
+                    currentSection = `${sectionNum}. ${sectionTitle}`;
+                    sectionContent = '';
+                } else if (trimmedLine) {
+                    // 섹션 내용 추가
+                    if (sectionContent) sectionContent += '<br>';
+                    sectionContent += trimmedLine;
+                } else if (!currentSection && trimmedLine) {
+                    // 섹션 구분 없이 시작하는 경우
+                    html += trimmedLine + '<br>';
+                }
+            });
+            
+            // 마지막 섹션 저장
+            if (currentSection) {
+                html += `<div class="ai-section">
+                            <div class="ai-section-title">${currentSection}</div>
+                            <div class="ai-section-content">${sectionContent}</div>
+                         </div>`;
+            }
+            
+            // 섹션이 없는 경우 기본 포맷팅
+            if (!html) {
+                html = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+            }
+            
+            return html;
+        }
 
-        // ▼▼▼ Gemini AI 요약 기능 ▼▼▼
-        window.generateAISummary = async function(memberId) {
-            // 전달해주신 새로운 키를 적용했습니다.
-            const apiKey = "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs"; 
-            
-            const member = members.find(m => m.id === memberId);
-            if (!member) return;
+        // ▼▼▼ Gemini AI 요약 기능 ▼▼▼
+        window.generateAISummary = async function(memberId) {
+            // 전달해주신 새로운 키를 적용했습니다.
+            const apiKey = "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs"; 
+            
+            const member = members.find(m => m.id === memberId);
+            if (!member) return;
 
-            // 1. 칭찬 데이터 수집
-            let allPraises = [];
-            if (member.grapes) {
-                member.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
-            }
-            if (member.history) {
-                member.history.forEach(round => {
-                    if (round.grapes) {
-                        round.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
-                    }
-                });
-            }
+            // 1. 칭찬 데이터 수집
+            let allPraises = [];
+            if (member.grapes) {
+                member.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
+            }
+            if (member.history) {
+                member.history.forEach(round => {
+                    if (round.grapes) {
+                        round.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
+                    }
+                });
+            }
 
-            if (allPraises.length < 3) {
-                alert("AI가 분석하기에 칭찬 데이터가 아직 부족해요! (최소 3개 이상)");
-                return;
-            }
+            if (allPraises.length < 3) {
+                alert("AI가 분석하기에 칭찬 데이터가 아직 부족해요! (최소 3개 이상)");
+                return;
+            }
 
-            const resultBox = document.getElementById(`ai-result-${memberId}`);
-            resultBox.classList.add('active');
-            resultBox.innerHTML = '<div style="display: flex; align-items: center; justify-content: center;"><span class="ai-loading"></span><span>✨ AI 분석을 실행 중입니다...</span></div>';
+            const resultBox = document.getElementById(`ai-result-${memberId}`);
+            resultBox.classList.add('active');
+            resultBox.innerHTML = '<div style="display: flex; align-items: center; justify-content: center;"><span class="ai-loading"></span><span>✨ AI 분석을 실행 중입니다...</span></div>';
 
-            try {
-                const promptText = `
+            try {
+                const promptText = `
 다음은 '${member.name}' 님이 동료들에게 받은 칭찬 목록입니다:
 ${JSON.stringify(allPraises)}
 
@@ -909,45 +909,45 @@ ${JSON.stringify(allPraises)}
 3. ✨ 동료들의 평가 요약
 어떤 점을 주로 칭찬받는지 2~3문장으로 부드럽게 설명
 
-중요: 
+중요: 
 - 반드시 "1.", "2.", "3." 번호로 시작하는 3개 섹션으로 구분
 - 각 섹션은 빈 줄로 구분
 - HTML 태그 사용 금지
 - 따뜻한 어투 사용
-                `;
+                `;
 
-                // 🚨 gemini-2.5-flash 모델 사용 (v1 - 최신 API)
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }]
-                    })
-                });
+                // 🚨 gemini-2.5-flash 모델 사용 (v1 - 최신 API)
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }]
+                    })
+                });
 
-                const data = await response.json();
+                const data = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(data.error?.message || "API 호출 실패");
-                }
+                if (!response.ok) {
+                    throw new Error(data.error?.message || "API 호출 실패");
+                }
 
-                const aiText = data.candidates[0].content.parts[0].text;
-                
-                // AI 결과를 섹션별로 파싱하여 가독성 개선
-                const formattedHTML = parseAIResult(aiText);
-                resultBox.innerHTML = formattedHTML;
+                const aiText = data.candidates[0].content.parts[0].text;
+                
+                // AI 결과를 섹션별로 파싱하여 가독성 개선
+                const formattedHTML = parseAIResult(aiText);
+                resultBox.innerHTML = formattedHTML;
 
-            } catch (error) {
-                console.error(error);
-                resultBox.innerHTML = "😢 분석 중 오류가 발생했어요.<br>잠시 후 다시 시도해주세요.";
-                alert("오류 내용: " + error.message);
-            }
-        };
+            } catch (error) {
+                console.error(error);
+                resultBox.innerHTML = "😢 분석 중 오류가 발생했어요.<br>잠시 후 다시 시도해주세요.";
+                alert("오류 내용: " + error.message);
+            }
+        };
 
-    </script>
+    </script>
 </body>
 </html>
