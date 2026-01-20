@@ -7,7 +7,7 @@
     <style>
         /* --- 기본 스타일 --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f0ff 0%, #e8deff 100%); min-height: 100vh; padding: 20px; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #f5f0ff 0%, #e8deff 100%); min-height: 100vh; padding: 20px; }
         
         .header { text-align: center; margin-bottom: 30px; }
         .header h1 { color: #6b46c1; font-size: 2.5em; margin-bottom: 10px; }
@@ -17,105 +17,112 @@
         .btn-add-member { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; border: none; padding: 12px 30px; font-size: 1.1em; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); font-weight: 600; }
         .btn-add-member:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); }
         
-        .members-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px 20px; max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
+        .members-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px 20px; max-width: 1600px; margin: 0 auto; position: relative; }
         
-        /* [수정 1] 카드 호버 시 z-index를 높여 옆 카드보다 위에 위치하게 함 */
-        .member-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease; overflow: visible; z-index: 1; margin-top: 20px; }
-        .member-card:hover { transform: translateY(-5px); z-index: 100; }
+        .member-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease; display: flex; flex-direction: column; }
+        .member-card:hover { transform: translateY(-5px); }
         
-        .btn-remove { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2em; transition: all 0.3s ease; z-index: 10; }
-        .btn-remove:hover { background: #dc2626; transform: rotate(90deg); }
+        .btn-remove { position: absolute; top: 15px; right: 15px; background: #fee2e2; color: #ef4444; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1.1em; transition: all 0.2s; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .btn-remove:hover { background: #ef4444; color: white; }
         
-        .member-header { text-align: center; margin-bottom: 15px; }
-        .profile-section { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .profile-image-container { position: relative; width: 70px; height: 70px; margin: 0 auto; }
+        .profile-section { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .profile-image-container { position: relative; width: 85px; height: 85px; }
         
-        .badge-container { position: absolute; right: 135%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; cursor: pointer; z-index: 5; transition: transform 0.2s; }
-        .badge-text { white-space: nowrap; color: #d97706; font-weight: 800; font-size: 0.9em; text-shadow: 0 1px 2px rgba(255,255,255,0.9); background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); padding: 5px 12px; border-radius: 10px; border: 2px solid #f59e0b; box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255,255,255,0.5); }
+        /* 뱃지 및 왕관 */
+        .badge-container { position: absolute; right: -45px; top: 50%; transform: translateY(-50%); z-index: 5; }
+        .badge-text { white-space: nowrap; color: #b45309; font-weight: 800; font-size: 0.75em; background: #fef3c7; padding: 4px 10px; border-radius: 12px; border: 2px solid #fbbf24; cursor: pointer; }
+        
+        .crown-icon { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 2.2em; z-index: 6; animation: floatCrown 1.5s ease-in-out infinite alternate; }
+        @keyframes floatCrown { from { transform: translateX(-50%) translateY(0) rotate(-5deg); } to { transform: translateX(-50%) translateY(-10px) rotate(5deg); } }
 
-        .crown-icon { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); font-size: 2.5em; z-index: 20; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); animation: floatCrown 1.5s ease-in-out infinite alternate; }
-        @keyframes floatCrown { from { top: -35px; transform: translateX(-50%) rotate(-5deg); } to { top: -45px; transform: translateX(-50%) rotate(5deg); } }
-
-        .profile-image { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #7c3aed; cursor: pointer; transition: all 0.3s ease; background: white; }
-        .profile-placeholder { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #e8deff 0%, #d8c7ff 100%); display: flex; align-items: center; justify-content: center; font-size: 1.8em; cursor: pointer; border: 3px solid #7c3aed; transition: all 0.3s ease; }
+        .profile-image, .profile-placeholder { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid #7c3aed; cursor: pointer; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 2em; }
         .profile-upload { display: none; }
-        .member-name-input { font-size: 1.1em; font-weight: bold; color: #6b46c1; border: 2px solid #e8deff; border-radius: 8px; padding: 6px 12px; text-align: center; outline: none; transition: all 0.3s ease; width: 100%; max-width: 200px; margin-top: 5px; }
-
-        .ai-summary-btn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 6px 16px; border-radius: 20px; font-size: 0.85em; cursor: pointer; margin-top: 8px; display: flex; align-items: center; gap: 6px; margin-left: auto; margin-right: auto; font-weight: bold; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3); transition: all 0.2s ease; }
-        .ai-result-box { margin-top: 15px; padding: 20px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; font-size: 0.95em; color: #166534; line-height: 1.9; display: none; text-align: left; width: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-        .ai-result-box.active { display: block; animation: modalSlideIn 0.3s ease; }
-
-        .grape-board { margin-top: 15px; display: flex; flex-direction: column; align-items: center; position: relative; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 0 0 3px white, 0 0 15px rgba(0, 0, 0, 0.1); overflow: visible; }
-        .grape-header { display: flex; align-items: flex-start; justify-content: center; position: relative; width: 100%; height: 50px; z-index: 1; }
-        .grape-stem { width: 6px; height: 30px; background: linear-gradient(180deg, #3d2817 0%, #5c3317 100%); border-radius: 3px; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1; }
-        .grape-leaves { display: flex; gap: -5px; position: absolute; top: 0; left: 50%; transform: translateX(-120%); z-index: 2; }
-        .leaf { width: 45px; height: 40px; background: linear-gradient(135deg, #2d8659 0%, #1f6b47 100%); border-radius: 50% 0%; position: relative; border: 2px solid #1a5437; transition: all 0.5s ease; }
-        .leaf.gold { background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%); border-color: #b45309; box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
-        .grape-title { position: absolute; top: 8px; right: 50%; transform: translateX(140%); font-size: 1em; font-weight: bold; color: #5b21b6; z-index: 3; white-space: nowrap; }
-
-        .grape-cluster { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 3px; position: relative; z-index: 1; }
-        .grape-row { display: flex; gap: 4px; justify-content: center; }
         
-        /* [수정 2] 포도알 호버 시 z-index를 높여 카드 내 다른 포도알보다 위에 위치하게 함 */
-        .grape { width: 35px; height: 35px; border: 3px solid #7c3aed; border-radius: 50%; background: white; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 0.85em; color: transparent; font-weight: 500; position: relative; z-index: 1; }
-        .grape:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); z-index: 10; }
-        .grape.filled { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border-color: #7c3aed; }
+        .member-name-input { font-size: 1.2em; font-weight: bold; color: #4c1d95; border: 2px solid transparent; border-radius: 8px; padding: 4px 10px; text-align: center; outline: none; width: 80%; }
+        .member-name-input:focus { border-color: #ddd6fe; background: #f5f3ff; }
         
-        /* [수정 3] 팝업창 z-index 최상위 설정 및 가독성 개선 */
-        .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: auto; left: 50%; top: 120%; transform: translateX(-50%); background: white; color: #1f2937; padding: 15px 20px; border-radius: 12px; font-size: 1em; font-weight: 500; z-index: 9999; max-width: 400px; min-width: 150px; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; line-height: 1.5; text-align: left; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px #7c3aed; pointer-events: none; }
-        .grape.filled:hover::before { content: ''; position: absolute; bottom: auto; left: 50%; top: calc(120% - 8px); transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: white; z-index: 9999; filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1)); pointer-events: none; }
+        /* --- 포도 보드 스타일 --- */
+        .grape-board { background: #fafafa; border-radius: 15px; padding: 20px 10px; position: relative; border: 1px solid #f3f4f6; }
+        .grape-header { height: 40px; position: relative; display: flex; justify-content: center; }
+        .grape-stem { width: 6px; height: 25px; background: #5c3317; border-radius: 3px; position: absolute; top: 10px; z-index: 1; }
+        .grape-leaves { position: absolute; top: 0; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; z-index: 2; }
+        .leaf { width: 35px; height: 25px; background: linear-gradient(135deg, #2d8659 0%, #1f6b47 100%); border-radius: 20px 0 20px 0; border: 1px solid #14532d; }
+        .leaf.gold { background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%); border-color: #92400e; }
+        
+        .grape-cluster { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-top: 10px; }
+        .grape-row { display: flex; gap: 5px; justify-content: center; }
+        
+        .grape { width: 32px; height: 32px; border: 2px solid #ddd6fe; border-radius: 50%; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75em; color: #a78bfa; transition: all 0.2s; position: relative; }
+        .grape.filled { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border-color: #7c3aed; font-weight: bold; }
+        .grape:hover { transform: scale(1.15); z-index: 10; border-color: #7c3aed; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
+        /* 말풍선 툴팁 */
+        .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 10px 15px; border-radius: 8px; font-size: 0.9em; white-space: pre-wrap; width: 180px; z-index: 100; box-shadow: 0 10px 15px rgba(0,0,0,0.2); pointer-events: none; }
+
+        /* AI 섹션 */
+        .ai-summary-btn { background: #ecfdf5; color: #059669; border: 1px solid #10b981; padding: 6px 14px; border-radius: 15px; font-size: 0.85em; cursor: pointer; font-weight: bold; margin-top: 5px; transition: all 0.2s; }
+        .ai-summary-btn:hover { background: #10b981; color: white; }
+        .ai-result-box { margin-top: 15px; padding: 15px; background: #f0fdf4; border-radius: 12px; font-size: 0.9em; display: none; border: 1px solid #dcfce7; }
+        .ai-result-box.active { display: block; }
+        
+        /* 모달 공통 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: modalSlideIn 0.3s ease; }
-        @keyframes modalSlideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; transition: all 0.3s ease; }
-        .modal-btn-save { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; }
-        .modal-btn-cancel { background: #e5e7eb; color: #4b5563; }
-        .modal-btn-delete { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+        .modal-content { background: white; border-radius: 20px; padding: 25px; width: 90%; max-width: 450px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
+        .modal-input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; margin-bottom: 20px; outline: none; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .modal-btn-save { background: #7c3aed; color: white; }
+        .modal-btn-cancel { background: #f3f4f6; color: #4b5563; }
+
+        .backup-controls { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; }
+        .btn-mini { padding: 8px 15px; border-radius: 8px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 0.8em; }
     </style>
 </head>
 <body>
+
     <div class="header">
         <h1>🍇 비즈옵스 칭찬 포도</h1>
-        <p>팀원들의 좋은 일을 칭찬하고 포도를 채워보세요!</p>
+        <p>서로의 장점을 찾아 포도를 채워주세요!</p>
     </div>
 
     <div class="controls">
-        <button class="btn-add-member" onclick="handleAddMember()">➕ 팀원 추가</button>
+        <button class="btn-add-member" onclick="handleAddMember()">➕ 팀원 추가하기</button>
     </div>
 
     <div class="members-container" id="membersContainer">
-        <div style="text-align:center; width:100%; color:#6b46c1;">데이터를 불러오는 중...</div>
+        <div style="text-align:center; width:100%; padding: 50px; color:#6b46c1;">데이터를 불러오는 중입니다...</div>
     </div>
 
     <div class="modal" id="praiseModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px; text-align: center;">🎉 칭찬 사유를 입력하세요</h3>
-            <input type="text" id="praiseInput" style="width: 100%; padding: 15px; border: 2px solid #e8deff; border-radius: 10px;" placeholder="예: 프로젝트 마감 성공!">
+            <h3 style="margin-bottom:15px; color:#6b46c1;">🎉 어떤 점을 칭찬하나요?</h3>
+            <input type="text" class="modal-input" id="praiseInput" placeholder="예: 오늘 회의 준비가 너무 완벽했어요!">
             <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closePraiseModal()">취소</button>
-                <button class="modal-btn modal-btn-save" onclick="savePraise()">저장</button>
+                <button class="modal-btn modal-btn-cancel" onclick="closePraiseModal()">취close</button>
+                <button class="modal-btn modal-btn-save" onclick="savePraise()">저장하기</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px; text-align: center;">🗑️ 칭찬 삭제</h3>
-            <div id="deleteModalText" style="text-align: center; margin-bottom: 20px;">이 칭찬을 삭제하시겠습니까?</div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">취소</button>
-                <button class="modal-btn modal-btn-delete" onclick="confirmDelete()">삭제</button>
-            </div>
+    <div class="modal" id="historyModal">
+        <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom:15px; color:#d97706;">🏆 명예의 전당 (과거 기록)</h3>
+            <div id="historyList"></div>
+            <button class="modal-btn modal-btn-cancel" style="width:100%; mt:15px;" onclick="document.getElementById('historyModal').classList.remove('active')">닫기</button>
         </div>
+    </div>
+
+    <div class="backup-controls">
+        <input type="file" id="jsonUpload" accept=".json" style="display:none" onchange="restoreData(this)">
+        <button class="btn-mini" onclick="document.getElementById('jsonUpload').click()">📂 데이터 복원</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+        // Firebase 설정 (기존 설정 유지)
         const firebaseConfig = {
             apiKey: "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs",
             authDomain: "grape-board-7065e.firebaseapp.com",
@@ -131,106 +138,205 @@
 
         let members = [];
         let currentGrapeData = null;
-        let deleteGrapeData = null;
-        const GRAPE_PATTERN = [6, 5, 5, 4, 4, 3, 2, 1];
         const TOTAL_GRAPES = 30;
+        const GRAPE_PATTERN = [6, 5, 5, 4, 4, 3, 2, 1];
 
-        onSnapshot(query(membersCollection, orderBy("createdAt")), (snapshot) => {
+        // 실시간 데이터 감시
+        const q = query(membersCollection, orderBy("createdAt"));
+        onSnapshot(q, (snapshot) => {
             members = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderMembers();
         });
 
+        // 멤버 추가
         window.handleAddMember = async function() {
+            const name = prompt("팀원 이름을 입력하세요:");
+            if(!name) return;
             await addDoc(membersCollection, {
-                name: `팀원 ${members.length + 1}`,
+                name: name,
                 photo: null,
                 grapes: Array(TOTAL_GRAPES).fill(null),
                 completionCount: 0,
+                history: [],
                 createdAt: Date.now()
             });
         };
 
+        // 멤버 삭제
         window.removeMember = async function(id) {
-            if (confirm('정말 삭제하시겠습니까?')) await deleteDoc(doc(db, "members", id));
-        };
-
-        window.clickGrape = function(memberId, grapeIndex) {
-            const member = members.find(m => m.id === memberId);
-            const grape = member.grapes[grapeIndex];
-            if (grape && grape.reason) {
-                deleteGrapeData = { memberId, grapeIndex };
-                document.getElementById('deleteModalText').innerHTML = `<strong>"${grape.reason}"</strong><br>삭제하시겠습니까?`;
-                document.getElementById('deleteModal').classList.add('active');
-            } else {
-                currentGrapeData = { memberId, grapeIndex };
-                document.getElementById('praiseModal').classList.add('active');
-                document.getElementById('praiseInput').value = '';
-                document.getElementById('praiseInput').focus();
+            if (confirm('정말 이 팀원을 삭제하시겠습니까?')) {
+                await deleteDoc(doc(db, "members", id));
             }
         };
 
-        window.savePraise = async function() {
-            const reason = document.getElementById('praiseInput').value.trim();
-            if (!reason || !currentGrapeData) return;
-            const { memberId, grapeIndex } = currentGrapeData;
-            const member = members.find(m => m.id === memberId);
-            const newGrapes = [...member.grapes];
-            newGrapes[grapeIndex] = { reason, dateString: new Date().toLocaleString() };
-            await updateDoc(doc(db, "members", memberId), { grapes: newGrapes });
-            closePraiseModal();
-        };
-
-        window.confirmDelete = async function() {
-            if (!deleteGrapeData) return;
-            const { memberId, grapeIndex } = deleteGrapeData;
-            const member = members.find(m => m.id === memberId);
-            const newGrapes = [...member.grapes];
-            newGrapes[grapeIndex] = null;
-            await updateDoc(doc(db, "members", memberId), { grapes: newGrapes });
-            closeDeleteModal();
-        };
-
-        window.closePraiseModal = () => document.getElementById('praiseModal').classList.remove('active');
-        window.closeDeleteModal = () => document.getElementById('deleteModal').classList.remove('active');
-
+        // 포도 렌더링 함수
         function renderMembers() {
             const container = document.getElementById('membersContainer');
             container.innerHTML = '';
+            
+            if(members.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px;">팀원을 추가해 보세요! 🍇</div>';
+                return;
+            }
+
+            // 점수 계산 (왕관 결정용)
+            const maxScore = Math.max(...members.map(m => (m.completionCount || 0) * 30 + m.grapes.filter(g => g).length));
+
             members.forEach(member => {
+                const filledCount = member.grapes.filter(g => g).length;
+                const isKing = maxScore > 0 && ((member.completionCount || 0) * 30 + filledCount) === maxScore;
+
                 const card = document.createElement('div');
                 card.className = 'member-card';
                 card.innerHTML = `
-                    <button class="btn-remove" onclick="removeMember('${member.id}')">×</button>
-                    <div class="member-header">
+                    <button class="btn-remove" onclick="removeMember('${member.id}')">✕</button>
+                    <div class="profile-section">
                         <div class="profile-image-container">
-                            ${member.photo ? `<img src="${member.photo}" class="profile-image">` : `<div class="profile-placeholder">👤</div>`}
+                            ${isKing ? '<div class="crown-icon">👑</div>' : ''}
+                            ${member.completionCount > 0 ? `<div class="badge-container"><div class="badge-text" onclick="showHistory('${member.id}')">🏆 ${member.completionCount}회 완성</div></div>` : ''}
+                            ${member.photo 
+                                ? `<img src="${member.photo}" class="profile-image" onclick="document.getElementById('upload-${member.id}').click()">` 
+                                : `<div class="profile-placeholder" onclick="document.getElementById('upload-${member.id}').click()">👤</div>`}
+                            <input type="file" id="upload-${member.id}" class="profile-upload" accept="image/*" onchange="uploadPhoto('${member.id}', event)">
                         </div>
-                        <input type="text" class="member-name-input" value="${member.name}" readonly>
+                        <input type="text" class="member-name-input" value="${member.name}" onchange="updateMemberName('${member.id}', this.value)">
+                        <button class="ai-summary-btn" onclick="generateAISummary('${member.id}')">🤖 AI 분석</button>
+                        <div id="ai-result-${member.id}" class="ai-result-box"></div>
                     </div>
                     <div class="grape-board">
-                        <div class="grape-header"><div class="grape-title">칭찬포도</div></div>
-                        <div class="grape-cluster">${renderGrapeCluster(member)}</div>
+                        <div class="grape-header">
+                            <div class="grape-leaves">
+                                <div class="leaf ${member.completionCount > 0 ? 'gold' : ''}"></div>
+                                <div class="leaf ${member.completionCount > 0 ? 'gold' : ''}"></div>
+                            </div>
+                            <div class="grape-stem"></div>
+                        </div>
+                        <div class="grape-cluster">
+                            ${renderGrapeRows(member)}
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function renderGrapeCluster(member) {
-            let html = '', idx = 0;
+        function renderGrapeRows(member) {
+            let html = '';
+            let grapeIdx = 0;
             GRAPE_PATTERN.forEach(count => {
                 html += '<div class="grape-row">';
-                for (let i = 0; i < count; i++) {
-                    const g = member.grapes[idx];
-                    const filled = g && g.reason;
-                    const reason = filled ? `${g.reason}\n\n📅 ${g.dateString}` : '';
-                    html += `<div class="grape ${filled ? 'filled' : ''}" data-reason="${reason}" onclick="clickGrape('${member.id}', ${idx})">${idx + 1}</div>`;
-                    idx++;
+                for(let i=0; i<count; i++) {
+                    const grape = member.grapes[grapeIdx];
+                    const isFilled = grape && grape.reason;
+                    html += `
+                        <div class="grape ${isFilled ? 'filled' : ''}" 
+                             data-reason="${isFilled ? grape.reason : ''}"
+                             onclick="clickGrape('${member.id}', ${grapeIdx})">
+                            ${isFilled ? '🍇' : grapeIdx + 1}
+                        </div>`;
+                    grapeIdx++;
                 }
                 html += '</div>';
             });
             return html;
         }
+
+        window.clickGrape = function(mId, gIdx) {
+            currentGrapeData = { mId, gIdx };
+            const member = members.find(m => m.id === mId);
+            if(member.grapes[gIdx]) {
+                if(confirm('이 칭찬을 삭제할까요?')) {
+                    const newGrapes = [...member.grapes];
+                    newGrapes[gIdx] = null;
+                    updateDoc(doc(db, "members", mId), { grapes: newGrapes });
+                }
+            } else {
+                document.getElementById('praiseModal').classList.add('active');
+                document.getElementById('praiseInput').focus();
+            }
+        };
+
+        window.savePraise = async function() {
+            const reason = document.getElementById('praiseInput').value.trim();
+            if(!reason) return;
+            const { mId, gIdx } = currentGrapeData;
+            const member = members.find(m => m.id === mId);
+            const newGrapes = [...member.grapes];
+            newGrapes[gIdx] = { reason, date: new Date().toISOString() };
+            
+            await updateDoc(doc(db, "members", mId), { grapes: newGrapes });
+            
+            // 다 채웠는지 확인
+            if(newGrapes.filter(g => g).length === TOTAL_GRAPES) {
+                alert('와! 포도송이를 모두 채웠습니다!');
+                const historyEntry = { round: (member.completionCount || 0) + 1, grapes: newGrapes, date: new Date().toISOString() };
+                await updateDoc(doc(db, "members", mId), {
+                    completionCount: (member.completionCount || 0) + 1,
+                    grapes: Array(TOTAL_GRAPES).fill(null),
+                    history: [...(member.history || []), historyEntry]
+                });
+            }
+            closePraiseModal();
+        };
+
+        window.closePraiseModal = () => {
+            document.getElementById('praiseModal').classList.remove('active');
+            document.getElementById('praiseInput').value = '';
+        };
+
+        window.updateMemberName = async (id, name) => { await updateDoc(doc(db, "members", id), { name }); };
+
+        window.uploadPhoto = function(id, event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    await updateDoc(doc(db, "members", id), { photo: e.target.result });
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.showHistory = function(id) {
+            const member = members.find(m => m.id === id);
+            const list = document.getElementById('historyList');
+            list.innerHTML = (member.history || []).map(h => `
+                <div style="padding:10px; border-bottom:1px solid #eee;">
+                    <strong>${h.round}회차 완성</strong> (${new Date(h.date).toLocaleDateString()})
+                    <p style="font-size:0.85em; color:#666;">${h.grapes.map(g => g.reason).join(', ')}</p>
+                </div>
+            `).join('') || '기록이 없습니다.';
+            document.getElementById('historyModal').classList.add('active');
+        };
+
+        // AI 분석 기능 (Gemini 1.5 Flash 모델로 안정화)
+        window.generateAISummary = async function(memberId) {
+            const apiKey = "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs"; // 사용자의 키 유지
+            const member = members.find(m => m.id === memberId);
+            const praises = member.grapes.filter(g => g).map(g => g.reason);
+            
+            if(praises.length < 2) {
+                alert("분석을 위해 최소 2개 이상의 포도가 필요합니다!");
+                return;
+            }
+
+            const resultBox = document.getElementById(`ai-result-${memberId}`);
+            resultBox.style.display = 'block';
+            resultBox.innerHTML = "✨ 분석 중...";
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `${member.name}의 칭찬내역: ${praises.join(', ')}. 이 사람의 핵심 강점을 키워드 3개와 한줄평으로 요약해줘.` }] }] })
+                });
+                const data = await response.json();
+                resultBox.innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
+            } catch (e) {
+                resultBox.innerHTML = "❌ 분석 실패";
+            }
+        };
+
     </script>
 </body>
 </html>
