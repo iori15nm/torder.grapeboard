@@ -175,7 +175,6 @@
         .grape:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
         .grape.filled { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border-color: #7c3aed; }
         
-        /* 툴팁 스타일 */
         .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: auto; left: 50%; top: 120%; transform: translateX(-50%); background: white; color: #1f2937; padding: 15px 20px; border-radius: 12px; font-size: 1em; font-weight: 500; z-index: 999999; max-width: 400px; min-width: 150px; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; line-height: 1.5; text-align: left; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px #7c3aed; pointer-events: none; }
         .grape.filled:hover::before { content: ''; position: absolute; bottom: auto; left: 50%; top: calc(120% - 8px); transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: white; z-index: 999999; filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1)); pointer-events: none; }
         
@@ -192,12 +191,15 @@
         .modal-input:focus { border-color: #7c3aed; box-shadow: 0 0 10px rgba(124, 58, 237, 0.2); }
         .modal-buttons { display: flex; gap: 10px; }
         .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; transition: all 0.3s ease; }
-        .modal-btn-save { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; }
+        .modal-btn-save { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; font-weight: bold; }
         .modal-btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
         .modal-btn-cancel { background: #e5e7eb; color: #4b5563; }
         .modal-btn-cancel:hover { background: #d1d5db; }
-        .modal-btn-delete { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
-        .modal-btn-delete:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
+        
+        /* [수정] 삭제 버튼 스타일: 연한 회색으로 변경 */
+        .modal-btn-sub { background: #f3f4f6; color: #9ca3af; border: 1px solid #e5e7eb; }
+        .modal-btn-sub:hover { background: #e5e7eb; color: #6b7280; }
+
         .modal-text { color: #4b5563; font-size: 1.1em; margin-bottom: 20px; text-align: center; line-height: 1.6; }
         
         /* 히스토리 모달 스타일 */
@@ -277,11 +279,10 @@
 
     <div class="modal" id="deleteModal">
         <div class="modal-content">
-            <div class="modal-header">🗑️ 칭찬 삭제</div>
-            <div class="modal-text" id="deleteModalText">이 칭찬을 삭제하시겠습니까?</div>
+            <div class="modal-text" id="deleteModalText" style="margin-top: 10px;"></div>
             <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">취소</button>
-                <button class="modal-btn modal-btn-delete" onclick="confirmDelete()">삭제</button>
+                <button class="modal-btn modal-btn-sub" onclick="confirmDelete()">삭제</button>
+                <button class="modal-btn modal-btn-save" onclick="closeDeleteModal()">확인</button>
             </div>
         </div>
     </div>
@@ -419,6 +420,7 @@
             }
         };
 
+        // [수정] 칭찬 포도알 클릭 시 팝업 문구 개선
         window.clickGrape = function(memberId, grapeIndex) {
             const member = members.find(m => m.id === memberId);
             if (!member) return;
@@ -428,8 +430,9 @@
 
             if (isFilled) {
                 deleteGrapeData = { memberId, grapeIndex };
-                let displayText = `${grape.reason}<br><br>📅 ${grape.dateString}`;
-                document.getElementById('deleteModalText').innerHTML = `<strong>"${displayText}"</strong><br><br>이 칭찬을 삭제하시겠습니까?`;
+                // 삭제 안내 문구 제거하고 칭찬 내용과 날짜만 깔끔하게 표시
+                let displayText = `<div style="font-size:1.25em; color:#4b5563; margin-bottom:15px; font-weight:bold; word-break:keep-all;">"${grape.reason}"</div><div style="color:#9ca3af; font-size:0.9em;">📅 ${grape.dateString}</div>`;
+                document.getElementById('deleteModalText').innerHTML = displayText;
                 document.getElementById('deleteModal').classList.add('active');
             } else {
                 currentGrapeData = { memberId, grapeIndex };
@@ -899,6 +902,7 @@ ${JSON.stringify(allPraises)}
 - 따뜻한 어투 사용
                 `;
 
+                // 최신 모델인 gemini-2.0-flash 사용
                 const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
