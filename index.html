@@ -19,7 +19,6 @@
         
         .members-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px 20px; max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
         
-        /* [수정] 카드 호버 시 다른 카드보다 위로 오도록 z-index 추가 */
         .member-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease; overflow: visible; z-index: 1; margin-top: 20px; }
         .member-card:hover { transform: translateY(-5px); z-index: 100; }
         
@@ -59,7 +58,6 @@
             box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255,255,255,0.5);
         }
 
-        /* 1등 왕관 애니메이션 */
         .crown-icon {
             position: absolute;
             top: -35px;
@@ -87,7 +85,6 @@
         .member-name-input { font-size: 1.1em; font-weight: bold; color: #6b46c1; border: 2px solid #e8deff; border-radius: 8px; padding: 6px 12px; text-align: center; outline: none; transition: all 0.3s ease; width: 100%; max-width: 200px; margin-top: 5px; }
         .member-name-input:focus { border-color: #7c3aed; box-shadow: 0 0 10px rgba(124, 58, 237, 0.2); }
         
-        /* --- AI 요약 관련 스타일 --- */
         .ai-summary-btn {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white; border: none; padding: 6px 16px; border-radius: 20px;
@@ -167,7 +164,6 @@
         
         .grape-cluster { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 3px; position: relative; z-index: 1; }
 
-        /* [수정] 포도 줄이 호버될 때 z-index를 높여 아래 줄 포도알에 가려지지 않게 함 */
         .grape-row { display: flex; gap: 4px; justify-content: center; position: relative; z-index: 1; }
         .grape-row:hover { z-index: 10; }
         
@@ -178,10 +174,8 @@
         .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: auto; left: 50%; top: 120%; transform: translateX(-50%); background: white; color: #1f2937; padding: 15px 20px; border-radius: 12px; font-size: 1em; font-weight: 500; z-index: 999999; max-width: 400px; min-width: 150px; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; line-height: 1.5; text-align: left; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px #7c3aed; pointer-events: none; }
         .grape.filled:hover::before { content: ''; position: absolute; bottom: auto; left: 50%; top: calc(120% - 8px); transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: white; z-index: 999999; filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1)); pointer-events: none; }
         
-        /* [수정] 호버된 포도알 자체가 최상위로 오도록 */
         .grape.filled:hover { z-index: 999998; }
         
-        /* 모달 스타일 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: modalSlideIn 0.3s ease; }
@@ -196,13 +190,11 @@
         .modal-btn-cancel { background: #e5e7eb; color: #4b5563; }
         .modal-btn-cancel:hover { background: #d1d5db; }
         
-        /* [수정] 삭제 버튼 스타일: 연한 회색으로 변경 */
         .modal-btn-sub { background: #f3f4f6; color: #9ca3af; border: 1px solid #e5e7eb; }
         .modal-btn-sub:hover { background: #e5e7eb; color: #6b7280; }
 
         .modal-text { color: #4b5563; font-size: 1.1em; margin-bottom: 20px; text-align: center; line-height: 1.6; }
         
-        /* 히스토리 모달 스타일 */
         .history-list { max-height: 400px; overflow-y: auto; text-align: left; padding: 0 10px; }
         .history-round { background: #f9fafb; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid #e5e7eb; }
         .history-title { font-weight: bold; color: #d97706; margin-bottom: 10px; font-size: 1.1em; border-bottom: 2px solid #fef3c7; padding-bottom: 5px; }
@@ -281,8 +273,8 @@
         <div class="modal-content">
             <div class="modal-text" id="deleteModalText" style="margin-top: 10px;"></div>
             <div class="modal-buttons">
+                <button class="modal-btn modal-btn-save" onclick="closeDeleteModal()">확인</button>
                 <button class="modal-btn modal-btn-sub" onclick="confirmDelete()">삭제</button>
-                <button class="modal-btn modal-btn-save" onclick="closeDeleteModal()">닫기</button>
             </div>
         </div>
     </div>
@@ -420,7 +412,6 @@
             }
         };
 
-        // [수정] 칭찬 포도알 클릭 시 팝업 문구 개선
         window.clickGrape = function(memberId, grapeIndex) {
             const member = members.find(m => m.id === memberId);
             if (!member) return;
@@ -430,7 +421,6 @@
 
             if (isFilled) {
                 deleteGrapeData = { memberId, grapeIndex };
-                // 삭제 안내 문구 제거하고 칭찬 내용과 날짜만 깔끔하게 표시
                 let displayText = `<div style="font-size:1.25em; color:#4b5563; margin-bottom:15px; font-weight:bold; word-break:keep-all;">"${grape.reason}"</div><div style="color:#9ca3af; font-size:0.9em;">📅 ${grape.dateString}</div>`;
                 document.getElementById('deleteModalText').innerHTML = displayText;
                 document.getElementById('deleteModal').classList.add('active');
@@ -902,7 +892,6 @@ ${JSON.stringify(allPraises)}
 - 따뜻한 어투 사용
                 `;
 
-                // 최신 모델인 gemini-2.0-flash 사용
                 const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
