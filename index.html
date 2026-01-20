@@ -19,8 +19,9 @@
         
         .members-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px 20px; max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
         
-        .member-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease, z-index 0s; overflow: visible; z-index: 1; margin-top: 20px; }
-        .member-card:hover { transform: translateY(-5px); }
+        /* [수정] 카드 호버 시 다른 카드보다 위로 오도록 z-index 추가 */
+        .member-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); position: relative; transition: transform 0.3s ease; overflow: visible; z-index: 1; margin-top: 20px; }
+        .member-card:hover { transform: translateY(-5px); z-index: 100; }
         
         .btn-remove { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2em; transition: all 0.3s ease; z-index: 10; }
         .btn-remove:hover { background: #dc2626; transform: rotate(90deg); }
@@ -101,14 +102,13 @@
             margin-top: 15px; padding: 20px; background: #f0fdf4;
             border: 1px solid #86efac; border-radius: 12px;
             font-size: 0.95em; color: #166534; line-height: 1.9;
-            display: none; /* 기본적으로 숨김 */
+            display: none; 
             text-align: left;
             width: 100%;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
         .ai-result-box.active { display: block; animation: modalSlideIn 0.3s ease; }
         
-        /* AI 결과 섹션 스타일 */
         .ai-section {
             margin-bottom: 18px;
             padding-bottom: 15px;
@@ -134,7 +134,6 @@
             padding-left: 24px;
         }
         
-        /* AI 로딩 애니메이션 */
         .ai-loading {
             display: inline-block;
             width: 16px;
@@ -151,8 +150,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* ------------------------------------ */
-
         .grape-board { margin-top: 15px; display: flex; flex-direction: column; align-items: center; position: relative; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 0 0 3px white, 0 0 15px rgba(0, 0, 0, 0.1); overflow: visible; }
         
         .grape-header { display: flex; align-items: flex-start; justify-content: center; position: relative; margin-bottom: 0; width: 100%; height: 50px; z-index: 1; }
@@ -169,14 +166,20 @@
         .grape-title { position: absolute; top: 8px; right: 50%; transform: translateX(140%); font-size: 1em; font-weight: bold; color: #5b21b6; z-index: 3; white-space: nowrap; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
         
         .grape-cluster { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 3px; position: relative; z-index: 1; }
-        .grape-row { display: flex; gap: 4px; justify-content: center; }
+
+        /* [수정] 포도 줄이 호버될 때 z-index를 높여 아래 줄 포도알에 가려지지 않게 함 */
+        .grape-row { display: flex; gap: 4px; justify-content: center; position: relative; z-index: 1; }
+        .grape-row:hover { z-index: 10; }
         
         .grape { width: 35px; height: 35px; border: 3px solid #7c3aed; border-radius: 50%; background: white; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 0.85em; color: transparent; font-weight: 500; position: relative; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); z-index: 1; }
         .grape:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
         .grape.filled { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border-color: #7c3aed; }
         
+        /* 툴팁 스타일 */
         .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: auto; left: 50%; top: 120%; transform: translateX(-50%); background: white; color: #1f2937; padding: 15px 20px; border-radius: 12px; font-size: 1em; font-weight: 500; z-index: 999999; max-width: 400px; min-width: 150px; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; line-height: 1.5; text-align: left; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px #7c3aed; pointer-events: none; }
         .grape.filled:hover::before { content: ''; position: absolute; bottom: auto; left: 50%; top: calc(120% - 8px); transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: white; z-index: 999999; filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1)); pointer-events: none; }
+        
+        /* [수정] 호버된 포도알 자체가 최상위로 오도록 */
         .grape.filled:hover { z-index: 999998; }
         
         /* 모달 스타일 */
@@ -219,7 +222,6 @@
         .celebration-btn { background: linear-gradient(135deg, #7c3aed 0%, #6b46c1 100%); color: white; border: none; padding: 15px 40px; font-size: 1.2em; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(124, 58, 237, 0.3); }
         .celebration-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4); }
         
-        /* 컨페티 (축포) */
         .confetti { position: fixed; width: 10px; height: 10px; background: #fbbf24; position: absolute; animation: confettiFall 3s linear; }
         @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
         .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2500; }
@@ -362,7 +364,7 @@
                 photo: null,
                 grapes: Array(TOTAL_GRAPES).fill(null),
                 completionCount: 0,
-                history: [], // 과거 기록 저장용
+                history: [], 
                 createdAt: Date.now()
             };
             
@@ -477,7 +479,7 @@
 
                     const filledCount = newGrapes.filter(g => g !== null && g.reason).length;
                     if (filledCount === TOTAL_GRAPES) {
-                        currentGrapeData = { memberId }; // 축하 모달을 위해 ID 유지
+                        currentGrapeData = { memberId }; 
                         showCelebration(member);
                     }
                 } catch (e) {
@@ -511,7 +513,6 @@
             }
         };
 
-        // --- 히스토리 보기 기능 ---
         window.showHistory = function(memberId) {
             const member = members.find(m => m.id === memberId);
             if (!member) return;
@@ -522,7 +523,6 @@
             if (!member.history || member.history.length === 0) {
                 historyList.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;">아직 완성된 기록이 없습니다.</div>';
             } else {
-                // 최근 기록부터 보여주기
                 const reversedHistory = [...member.history].reverse();
                 
                 reversedHistory.forEach((record) => {
@@ -533,7 +533,6 @@
                     
                     let html = `<div class="history-title">🏆 ${record.round}회차 완성 (${dateStr})</div>`;
                     
-                    // 칭찬 내용 필터링
                     const validGrapes = record.grapes.filter(g => g && g.reason);
                     
                     if (validGrapes.length === 0) {
@@ -808,9 +807,7 @@
             }
         });
 
-        // AI 결과 파싱 함수 (가독성 개선)
         function parseAIResult(text) {
-            // 1, 2, 3으로 시작하는 섹션을 찾아서 구조화
             const lines = text.split('\n');
             let html = '';
             let currentSection = '';
@@ -818,59 +815,45 @@
             
             lines.forEach((line, index) => {
                 const trimmedLine = line.trim();
-                
-                // 1. 또는 2. 또는 3. 으로 시작하는 경우 (새로운 섹션)
                 const sectionMatch = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
                 
                 if (sectionMatch) {
-                    // 이전 섹션 저장
                     if (currentSection) {
                         html += `<div class="ai-section">
                                     <div class="ai-section-title">${currentSection}</div>
                                     <div class="ai-section-content">${sectionContent}</div>
                                  </div>`;
                     }
-                    
-                    // 새로운 섹션 시작
                     const sectionNum = sectionMatch[1];
                     const sectionTitle = sectionMatch[2];
                     currentSection = `${sectionNum}. ${sectionTitle}`;
                     sectionContent = '';
                 } else if (trimmedLine) {
-                    // 섹션 내용 추가
                     if (sectionContent) sectionContent += '<br>';
                     sectionContent += trimmedLine;
                 } else if (!currentSection && trimmedLine) {
-                    // 섹션 구분 없이 시작하는 경우
                     html += trimmedLine + '<br>';
                 }
             });
             
-            // 마지막 섹션 저장
             if (currentSection) {
                 html += `<div class="ai-section">
                             <div class="ai-section-title">${currentSection}</div>
                             <div class="ai-section-content">${sectionContent}</div>
                          </div>`;
             }
-            
-            // 섹션이 없는 경우 기본 포맷팅
             if (!html) {
                 html = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
             }
-            
             return html;
         }
 
-        // ▼▼▼ Gemini AI 요약 기능 ▼▼▼
         window.generateAISummary = async function(memberId) {
-            // 전달해주신 새로운 키를 적용했습니다.
             const apiKey = "AIzaSyAuaHkcxL6Zr8xmkTpwFW5dGJtnJ8525Gs"; 
             
             const member = members.find(m => m.id === memberId);
             if (!member) return;
 
-            // 1. 칭찬 데이터 수집
             let allPraises = [];
             if (member.grapes) {
                 member.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
@@ -916,8 +899,7 @@ ${JSON.stringify(allPraises)}
 - 따뜻한 어투 사용
                 `;
 
-                // 🚨 gemini-2.5-flash 모델 사용 (v1 - 최신 API)
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
                     method: "POST",
@@ -936,8 +918,6 @@ ${JSON.stringify(allPraises)}
                 }
 
                 const aiText = data.candidates[0].content.parts[0].text;
-                
-                // AI 결과를 섹션별로 파싱하여 가독성 개선
                 const formattedHTML = parseAIResult(aiText);
                 resultBox.innerHTML = formattedHTML;
 
