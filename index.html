@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍇 비즈옵스 칭찬 포도 보드 (+AI 분석)</title>
+    <title>🍇 비즈옵스 칭찬 포도 보드 (+AI 요약)</title>
     <style>
-        /* --- 기본 스타일 (우리가족 칭찬포도 기반) --- */
+        /* --- 기본 스타일 --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f0ff 0%, #e8deff 100%); min-height: 100vh; padding: 20px; }
         
@@ -28,27 +28,43 @@
         .member-header { text-align: center; margin-bottom: 15px; }
         .profile-section { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         
-        .profile-image-container { position: relative; width: 140px; height: 140px; margin: 0 auto; }
+        .profile-image-container { position: relative; width: 70px; height: 70px; margin: 0 auto; }
         
         /* --- 뱃지 및 트로피 스타일 --- */
         .badge-container {
-            position: absolute; right: 135%; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; align-items: center;
-            cursor: pointer; z-index: 5; transition: transform 0.2s;
+            position: absolute;
+            right: 135%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s;
         }
         .badge-container:hover { transform: translateY(-50%) scale(1.05); }
 
         .badge-text {
-            white-space: nowrap; color: #d97706; font-weight: 800; font-size: 0.9em;
+            white-space: nowrap;
+            color: #d97706; 
+            font-weight: 800;
+            font-size: 0.9em;
             text-shadow: 0 1px 2px rgba(255,255,255,0.9);
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            padding: 5px 12px; border-radius: 10px; border: 2px solid #f59e0b;
+            padding: 5px 12px;
+            border-radius: 10px;
+            border: 2px solid #f59e0b;
             box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255,255,255,0.5);
         }
 
         .crown-icon {
-            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-            font-size: 2.5em; z-index: 20;
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5em;
+            z-index: 20;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
             animation: floatCrown 1.5s ease-in-out infinite alternate;
         }
@@ -58,10 +74,10 @@
             to { top: -45px; transform: translateX(-50%) rotate(5deg); }
         }
 
-        .profile-image { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 3px solid #7c3aed; cursor: pointer; transition: all 0.3s ease; background: white; }
+        .profile-image { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #7c3aed; cursor: pointer; transition: all 0.3s ease; background: white; }
         .profile-image:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
         
-        .profile-placeholder { width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(135deg, #e8deff 0%, #d8c7ff 100%); display: flex; align-items: center; justify-content: center; font-size: 1.8em; cursor: pointer; border: 3px solid #7c3aed; transition: all 0.3s ease; }
+        .profile-placeholder { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #e8deff 0%, #d8c7ff 100%); display: flex; align-items: center; justify-content: center; font-size: 1.8em; cursor: pointer; border: 3px solid #7c3aed; transition: all 0.3s ease; }
         .profile-placeholder:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
         
         .profile-upload { display: none; }
@@ -69,7 +85,6 @@
         .member-name-input { font-size: 1.1em; font-weight: bold; color: #6b46c1; border: 2px solid #e8deff; border-radius: 8px; padding: 6px 12px; text-align: center; outline: none; transition: all 0.3s ease; width: 100%; max-width: 200px; margin-top: 5px; }
         .member-name-input:focus { border-color: #7c3aed; box-shadow: 0 0 10px rgba(124, 58, 237, 0.2); }
         
-        /* --- AI 분석 관련 스타일 --- */
         .ai-summary-btn {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white; border: none; padding: 6px 16px; border-radius: 20px;
@@ -83,28 +98,55 @@
         .ai-result-box {
             margin-top: 15px; padding: 20px; background: #f0fdf4;
             border: 1px solid #86efac; border-radius: 12px;
-            font-size: 0.95em; color: #166534; line-height: 1.7;
-            display: none; text-align: left; width: 100%;
+            font-size: 0.95em; color: #166534; line-height: 1.9;
+            display: none; 
+            text-align: left;
+            width: 100%;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-            white-space: pre-wrap;
         }
         .ai-result-box.active { display: block; animation: modalSlideIn 0.3s ease; }
         
-        /* AI 결과 포맷팅 스타일 (비즈옵스 전용) */
-        .ai-section { margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px dashed #86efac; }
-        .ai-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .ai-section-title { font-weight: 800; font-size: 1.05em; color: #059669; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .ai-section-content { color: #166534; line-height: 1.8; padding-left: 24px; }
+        .ai-section {
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #86efac;
+        }
+        .ai-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .ai-section-title {
+            font-weight: 800;
+            font-size: 1.05em;
+            color: #059669;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-section-content {
+            color: #166534;
+            line-height: 1.8;
+            padding-left: 24px;
+        }
         
         .ai-loading {
-            display: inline-block; width: 16px; height: 16px;
-            border: 3px solid #86efac; border-top-color: #059669;
-            border-radius: 50%; animation: aiSpin 0.8s linear infinite;
-            margin-right: 8px; vertical-align: middle;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #86efac;
+            border-top-color: #059669;
+            border-radius: 50%;
+            animation: aiSpin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
         }
-        @keyframes aiSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* --- 포도 보드 스타일 --- */
+        @keyframes aiSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         .grape-board { margin-top: 15px; display: flex; flex-direction: column; align-items: center; position: relative; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 0 0 3px white, 0 0 15px rgba(0, 0, 0, 0.1); overflow: visible; }
         
         .grape-header { display: flex; align-items: flex-start; justify-content: center; position: relative; margin-bottom: 0; width: 100%; height: 50px; z-index: 1; }
@@ -131,6 +173,7 @@
         
         .grape.filled:hover::after { content: attr(data-reason); position: absolute; bottom: auto; left: 50%; top: 120%; transform: translateX(-50%); background: white; color: #1f2937; padding: 15px 20px; border-radius: 12px; font-size: 1em; font-weight: 500; z-index: 999999; max-width: 400px; min-width: 150px; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; line-height: 1.5; text-align: left; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 3px #7c3aed; pointer-events: none; }
         .grape.filled:hover::before { content: ''; position: absolute; bottom: auto; left: 50%; top: calc(120% - 8px); transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: white; z-index: 999999; filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1)); pointer-events: none; }
+        
         .grape.filled:hover { z-index: 999998; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
@@ -146,6 +189,7 @@
         .modal-btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3); }
         .modal-btn-cancel { background: #e5e7eb; color: #4b5563; }
         .modal-btn-cancel:hover { background: #d1d5db; }
+        
         .modal-btn-sub { background: #f3f4f6; color: #9ca3af; border: 1px solid #e5e7eb; }
         .modal-btn-sub:hover { background: #e5e7eb; color: #6b7280; }
 
@@ -177,16 +221,11 @@
         .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2500; }
         
         .grape-confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; overflow: hidden; border-radius: 15px; }
-        .grape-confetti { position: absolute; pointer-events: none; border-radius: 50%; }
-        
-        @keyframes grapeConfettiFall { 
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } 
-        }
-
-        @keyframes slideInDown { from { transform: translateX(-50%) translateY(-100px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+        .grape-confetti { position: absolute; pointer-events: none; }
+        @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-
+        @keyframes slideInDown { from { transform: translateX(-50%) translateY(-100px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+        
         @media (max-width: 768px) { .header h1 { font-size: 2em; } .members-container { grid-template-columns: 1fr; } .grape { width: 35px; height: 35px; } }
         
         .backup-controls { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
@@ -255,7 +294,8 @@
             <div class="modal-text" style="text-align: left; margin-bottom: 10px; font-size: 0.95em;">
                 이전에 완성한 포도송이들의 기록입니다.
             </div>
-            <div class="history-list" id="historyList"></div>
+            <div class="history-list" id="historyList">
+                </div>
             <div class="modal-buttons" style="margin-top: 20px;">
                 <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('historyModal').classList.remove('active')">닫기</button>
             </div>
@@ -273,7 +313,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // --- 비즈옵스 Firebase Config ---
         const firebaseConfig = {
           apiKey: "AIzaSyClw_YuMk7hwlV-c2kAagxbSDFjJ8J2qHk",
           authDomain: "grape-board-7065e.firebaseapp.com",
@@ -283,6 +322,7 @@
           appId: "1:658561934916:web:3f81caca7f24cd3ffe3e11",
           measurementId: "G-590B327N90"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const membersCollection = collection(db, "members");
@@ -291,13 +331,14 @@
         
         const GRAPE_PATTERN = [6, 5, 5, 4, 4, 3, 2, 1];
         const TOTAL_GRAPES = 30;
-        // 비밀번호 비즈옵스용으로 수정
         const DELETE_PASSWORD = "비즈옵스짱"; 
+        
         let members = [];
         let currentGrapeData = null;
         let deleteGrapeData = null;
 
         const q = query(membersCollection, orderBy("createdAt"));
+        
         onSnapshot(q, (snapshot) => {
             members = snapshot.docs.map(doc => ({
                 id: doc.id,
@@ -319,10 +360,11 @@
                 history: [], 
                 createdAt: Date.now()
             };
+            
             try {
                 await addDoc(membersCollection, newMember);
             } catch (e) {
-                alert("팀원 추가 실패: " + e.message);
+                alert("멤버 추가 실패: " + e.message);
             }
         };
 
@@ -376,6 +418,7 @@
 
             const grape = member.grapes[grapeIndex];
             const isFilled = grape !== null && typeof grape === 'object' && grape.reason && grape.reason.trim() !== '';
+
             if (isFilled) {
                 deleteGrapeData = { memberId, grapeIndex };
                 let displayText = `<div style="font-size:1.25em; color:#4b5563; margin-bottom:15px; font-weight:bold; word-break:keep-all;">"${grape.reason}"</div><div style="color:#9ca3af; font-size:0.9em;">📅 ${grape.dateString}</div>`;
@@ -396,8 +439,10 @@
                 return;
             }
             if (!currentGrapeData) return;
+
             const { memberId, grapeIndex } = currentGrapeData;
             const member = members.find(m => m.id === memberId);
+            
             if (member) {
                 const now = new Date();
                 const newGrape = {
@@ -408,6 +453,7 @@
                         hour: '2-digit', minute: '2-digit'
                     })
                 };
+
                 const newGrapes = [...member.grapes];
                 newGrapes[grapeIndex] = newGrape;
 
@@ -415,10 +461,9 @@
 
                 try {
                     await updateDoc(doc(db, "members", memberId), { grapes: newGrapes });
+                    
                     showSaveNotification('저장되었습니다');
-                    
                     setTimeout(() => createQuickConfetti(memberId), 100);
-                    
                     const grapeElement = document.querySelector(`[data-member-id="${memberId}"][data-grape-index="${grapeIndex}"]`);
                     if (grapeElement) {
                         grapeElement.classList.add('sparkle');
@@ -427,7 +472,7 @@
 
                     const filledCount = newGrapes.filter(g => g !== null && g.reason).length;
                     if (filledCount === TOTAL_GRAPES) {
-                        currentGrapeData = { memberId };
+                        currentGrapeData = { memberId }; 
                         showCelebration(member);
                     }
                 } catch (e) {
@@ -438,6 +483,7 @@
 
         window.confirmDelete = async function() {
             if (!deleteGrapeData) return;
+
             const password = prompt("칭찬을 삭제하려면 비밀번호를 입력하세요:");
             if (password !== DELETE_PASSWORD) {
                 alert("비밀번호가 일치하지 않습니다.");
@@ -466,10 +512,12 @@
 
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
+
             if (!member.history || member.history.length === 0) {
                 historyList.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;">아직 완성된 기록이 없습니다.</div>';
             } else {
                 const reversedHistory = [...member.history].reverse();
+                
                 reversedHistory.forEach((record) => {
                     const roundDiv = document.createElement('div');
                     roundDiv.className = 'history-round';
@@ -479,7 +527,7 @@
                     let html = `<div class="history-title">🏆 ${record.round}회차 완성 (${dateStr})</div>`;
                     
                     const validGrapes = record.grapes.filter(g => g && g.reason);
-                     
+                    
                     if (validGrapes.length === 0) {
                         html += '<div class="history-item">기록된 칭찬이 없습니다.</div>';
                     } else {
@@ -565,6 +613,7 @@
         
         window.closeCelebration = async function() {
             document.getElementById('celebrationModal').classList.remove('active');
+            
             for(let i=0; i<3; i++) {
                 setTimeout(createConfetti, i*300);
             }
@@ -581,13 +630,15 @@
                             completedAt: Date.now(),
                             grapes: member.grapes
                         };
+                        
                         await updateDoc(doc(db, "members", member.id), {
                             completionCount: newCount,
                             grapes: Array(TOTAL_GRAPES).fill(null),
                             history: [...currentHistory, historyEntry]
                         });
+                        
                     } catch (e) { 
-                        console.error("초기화 실패:", e);
+                        console.error("초기화 실패:", e); 
                         alert("데이터 업데이트 중 오류가 발생했습니다.");
                     }
                 }
@@ -600,130 +651,10 @@
             const notification = document.createElement('div');
             notification.id = 'saveNotification';
             notification.innerHTML = `<div style="display: flex; align-items: center; gap: 10px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span>${message}</span></div>`;
-            notification.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;
-            padding: 16px 32px; border-radius: 12px; box-shadow: 0 10px 40px rgba(16, 185, 129, 0.5); z-index: 100001; font-weight: 600; font-size: 16px;
-            animation: slideInDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), fadeOut 0.3s ease 2.7s forwards;`;
+            notification.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 32px; border-radius: 12px; box-shadow: 0 10px 40px rgba(16, 185, 129, 0.5); z-index: 100001; font-weight: 600; font-size: 16px; animation: slideInDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), fadeOut 0.3s ease 2.7s forwards;`;
             document.body.appendChild(notification);
             setTimeout(() => { if (notification.parentNode) notification.remove(); }, 3000);
         }
-        
-        // --- AI 요약 기능 (비즈옵스 로직 + 우리가족 UI 통합) ---
-        function parseAIResult(text) {
-            const lines = text.split('\n');
-            let html = '';
-            let currentSection = '';
-            let sectionContent = '';
-            lines.forEach((line, index) => {
-                const trimmedLine = line.trim();
-                const sectionMatch = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
-                
-                if (sectionMatch) {
-                    if (currentSection) {
-                         html += `<div class="ai-section">
-                                    <div class="ai-section-title">${currentSection}</div>
-                                    <div class="ai-section-content">${sectionContent}</div>
-                                </div>`;
-                    }
-                    const sectionNum = sectionMatch[1];
-                    const sectionTitle = sectionMatch[2];
-                    currentSection = `${sectionNum}. ${sectionTitle}`;
-                    sectionContent = '';
-                } else if (trimmedLine) {
-                    if (sectionContent) sectionContent += '<br>';
-                    sectionContent += trimmedLine;
-                } else if (!currentSection && trimmedLine) {
-                    html += trimmedLine + '<br>';
-                }
-            });
-            if (currentSection) {
-                html += `<div class="ai-section">
-                            <div class="ai-section-title">${currentSection}</div>
-                            <div class="ai-section-content">${sectionContent}</div>
-                        </div>`;
-            }
-            if (!html) {
-                html = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
-            }
-            return html;
-        }
-
-        window.generateAISummary = async function(memberId) {
-            // 비즈옵스용 API Key
-            const apiKey = "AIzaSyAtMjQVMlWs85zFmtFfiyy_XLBtCiVfOUk";
-            const member = members.find(m => m.id === memberId);
-            if (!member) return;
-
-            let allPraises = [];
-            if (member.grapes) {
-                member.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
-            }
-            if (member.history) {
-                member.history.forEach(round => {
-                    if (round.grapes) {
-                        round.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
-                    }
-                });
-            }
-
-            if (allPraises.length < 3) {
-                alert("AI가 분석하기에 칭찬 데이터가 아직 부족해요! (최소 3개 이상)");
-                return;
-            }
-
-            const resultBox = document.getElementById(`ai-result-${memberId}`);
-            resultBox.classList.add('active');
-            resultBox.innerHTML = '<div style="display: flex; align-items: center; justify-content: center;"><span class="ai-loading"></span><span>✨ AI 분석을 실행 중입니다...</span></div>';
-            
-            try {
-                const promptText = `
-다음은 '${member.name}' 님이 동료들에게 받은 칭찬 목록입니다:
-${JSON.stringify(allPraises)}
-
-이 데이터를 바탕으로 이 사람의 강점을 분석해주세요.
-반드시 아래 형식을 정확히 지켜서 답변해주세요:
-
-1. 🏆 핵심 키워드 3개
-#키워드1 #키워드2 #키워드3 형식으로 3개만 나열
-
-2. 📝 한 줄 요약
-이 사람의 업무 스타일이나 성격을 한 문장으로 요약
-
-3. ✨ 동료들의 평가 요약
-어떤 점을 주로 칭찬받는지 2~3문장으로 부드럽게 설명
-
-중요: 
-- 반드시 "1.", "2.", "3." 번호로 시작하는 3개 섹션으로 구분
-- 각 섹션은 빈 줄로 구분
-- HTML 태그 사용 금지
-- 따뜻한 어투 사용
-                `;
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }]
-                    })
-                });
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error?.message || "API 호출 실패");
-                }
-
-                const aiText = data.candidates[0].content.parts[0].text;
-                const formattedHTML = parseAIResult(aiText);
-                resultBox.innerHTML = formattedHTML;
-
-            } catch (error) {
-                console.error(error);
-                resultBox.innerHTML = "😢 분석 중 오류가 발생했어요.<br>잠시 후 다시 시도해주세요.";
-                alert("오류 내용: " + error.message);
-            }
-        };
 
         function renderMembers() {
             const container = document.getElementById('membersContainer');
@@ -741,6 +672,7 @@ ${JSON.stringify(allPraises)}
                 if(score > maxScore) maxScore = score;
                 return { id: m.id, score: score };
             });
+            
             members.forEach(member => {
                 const scoreObj = memberScores.find(s => s.id === member.id);
                 const isKing = maxScore > 0 && scoreObj.score === maxScore;
@@ -756,6 +688,7 @@ ${JSON.stringify(allPraises)}
                         <div class="profile-section">
                             <div class="profile-image-container">
                                 ${isKing ? '<div class="crown-icon">👑</div>' : ''}
+                                
                                 ${member.completionCount > 0 
                                     ? `<div class="badge-container" onclick="showHistory('${member.id}')" title="누르면 과거 칭찬 내역을 볼 수 있습니다">
                                          <div class="badge-text">${member.completionCount}회 완성</div>
@@ -774,6 +707,7 @@ ${JSON.stringify(allPraises)}
                                 🤖 AI 분석 보기
                             </button>
                             <div id="ai-result-${member.id}" class="ai-result-box"></div>
+
                         </div>
                     </div>
                     <div class="grape-board">
@@ -788,7 +722,7 @@ ${JSON.stringify(allPraises)}
                         <div class="grape-cluster">
                             ${renderGrapeCluster(member)}
                         </div>
-                     </div>
+                    </div>
                 `;
                 container.appendChild(card);
             });
@@ -846,35 +780,18 @@ ${JSON.stringify(allPraises)}
             if (!grapeBoard) return;
             const existingContainer = grapeBoard.querySelector('.grape-confetti-container');
             if (existingContainer) existingContainer.remove();
-            
             const confettiContainer = document.createElement('div');
             confettiContainer.className = 'grape-confetti-container';
             grapeBoard.appendChild(confettiContainer);
             
-            const colors = ['#fbbf24', '#f59e0b', '#7c3aed', '#ec4899', '#10b981'];
-            for(let i=0; i<30; i++) {
+            for(let i=0; i<20; i++) {
                  const p = document.createElement('div');
                  p.className = 'grape-confetti';
-                 
-                 const size = Math.random() * 6 + 4 + 'px';
-                 p.style.width = size; 
-                 p.style.height = size;
-                 p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                 p.style.left = '50%'; 
-                 p.style.top = '50%';
-                 
-                 const tx = (Math.random() - 0.5) * 250;
-                 const ty = (Math.random() - 0.5) * 250; 
-                 p.style.setProperty('--tx', `${tx}px`);
-                 p.style.setProperty('--ty', `${ty}px`);
-                 
-                 p.style.animation = `grapeConfettiFall 0.8s ease-out forwards`;
-                 setTimeout(() => { p.remove(); }, 800);
-
+                 p.style.width = '8px'; p.style.height='8px'; p.style.background='#fbbf24';
+                 p.style.left = '50%'; p.style.top='50%';
+                 p.style.animation = `grapeConfettiFall 1s ease-out forwards`;
                  confettiContainer.appendChild(p);
             }
-            
-            setTimeout(() => { confettiContainer.remove(); }, 1000);
         }
 
         document.addEventListener('keydown', (e) => {
@@ -882,6 +799,128 @@ ${JSON.stringify(allPraises)}
                 savePraise();
             }
         });
+
+        function parseAIResult(text) {
+            const lines = text.split('\n');
+            let html = '';
+            let currentSection = '';
+            let sectionContent = '';
+            
+            lines.forEach((line, index) => {
+                const trimmedLine = line.trim();
+                const sectionMatch = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
+                
+                if (sectionMatch) {
+                    if (currentSection) {
+                        html += `<div class="ai-section">
+                                    <div class="ai-section-title">${currentSection}</div>
+                                    <div class="ai-section-content">${sectionContent}</div>
+                                 </div>`;
+                    }
+                    const sectionNum = sectionMatch[1];
+                    const sectionTitle = sectionMatch[2];
+                    currentSection = `${sectionNum}. ${sectionTitle}`;
+                    sectionContent = '';
+                } else if (trimmedLine) {
+                    if (sectionContent) sectionContent += '<br>';
+                    sectionContent += trimmedLine;
+                } else if (!currentSection && trimmedLine) {
+                    html += trimmedLine + '<br>';
+                }
+            });
+            
+            if (currentSection) {
+                html += `<div class="ai-section">
+                            <div class="ai-section-title">${currentSection}</div>
+                            <div class="ai-section-content">${sectionContent}</div>
+                         </div>`;
+            }
+            if (!html) {
+                html = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+            }
+            return html;
+        }
+
+        window.generateAISummary = async function(memberId) {
+            const apiKey = "AIzaSyAtMjQVMlWs85zFmtFfiyy_XLBtCiVfOUk"; 
+            
+            const member = members.find(m => m.id === memberId);
+            if (!member) return;
+
+            let allPraises = [];
+            if (member.grapes) {
+                member.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
+            }
+            if (member.history) {
+                member.history.forEach(round => {
+                    if (round.grapes) {
+                        round.grapes.forEach(g => { if (g && g.reason) allPraises.push(g.reason); });
+                    }
+                });
+            }
+
+            if (allPraises.length < 3) {
+                alert("AI가 분석하기에 칭찬 데이터가 아직 부족해요! (최소 3개 이상)");
+                return;
+            }
+
+            const resultBox = document.getElementById(`ai-result-${memberId}`);
+            resultBox.classList.add('active');
+            resultBox.innerHTML = '<div style="display: flex; align-items: center; justify-content: center;"><span class="ai-loading"></span><span>✨ AI 분석을 실행 중입니다...</span></div>';
+
+            try {
+                const promptText = `
+다음은 '${member.name}' 님이 동료들에게 받은 칭찬 목록입니다:
+${JSON.stringify(allPraises)}
+
+이 데이터를 바탕으로 이 사람의 강점을 분석해주세요.
+반드시 아래 형식을 정확히 지켜서 답변해주세요:
+
+1. 🏆 핵심 키워드 3개
+#키워드1 #키워드2 #키워드3 형식으로 3개만 나열
+
+2. 📝 한 줄 요약
+이 사람의 업무 스타일이나 성격을 한 문장으로 요약
+
+3. ✨ 동료들의 평가 요약
+어떤 점을 주로 칭찬받는지 2~3문장으로 부드럽게 설명
+
+중요: 
+- 반드시 "1.", "2.", "3." 번호로 시작하는 3개 섹션으로 구분
+- 각 섹션은 빈 줄로 구분
+- HTML 태그 사용 금지
+- 따뜻한 어투 사용
+                `;
+
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error?.message || "API 호출 실패");
+                }
+
+                const aiText = data.candidates[0].content.parts[0].text;
+                const formattedHTML = parseAIResult(aiText);
+                resultBox.innerHTML = formattedHTML;
+
+            } catch (error) {
+                console.error(error);
+                resultBox.innerHTML = "😢 분석 중 오류가 발생했어요.<br>잠시 후 다시 시도해주세요.";
+                alert("오류 내용: " + error.message);
+            }
+        };
+
     </script>
 </body>
 </html>
